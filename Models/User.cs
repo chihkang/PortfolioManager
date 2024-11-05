@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace PortfolioManager.Models;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -28,7 +30,7 @@ public class Portfolio
     [BsonElement("totalValue")]
     public decimal TotalValue { get; set; }
     [BsonElement("exchange_rate")]
-    public string ExchangeRate { get; set; }
+    public decimal? ExchangeRate { get; set; }
     [BsonElement("exchange_rate_updated")]
     public DateTime ExchangeRateUpdated { get; set; }
     [BsonElement("lastUpdated")]
@@ -65,5 +67,21 @@ public class Stock
     [BsonElement("currency")]
     public string Currency { get; set; }
     [BsonElement("lastUpdated")]
+    public DateTime LastUpdated { get; set; }
+}
+public class UpdateExchangeRateRequest
+{
+    [Required]
+    [Range(0.01, double.MaxValue, ErrorMessage = "Exchange rate must be greater than 0")]
+    public decimal Rate { get; set; }
+        
+    public string UpdatedBy { get; set; }
+        
+    public string Source { get; set; }
+}
+
+public class ExchangeRateResponse
+{
+    public decimal Rate { get; set; }
     public DateTime LastUpdated { get; set; }
 }

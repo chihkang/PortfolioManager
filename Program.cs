@@ -1,6 +1,10 @@
-using Microsoft.OpenApi.Models;
-using System.Reflection;
+using MediatR;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
+using PortfolioManager.Configuration;
+using PortfolioManager.Events;
 using PortfolioManager.Services;
+using PortfolioManager.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,35 +12,38 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.Configure<MongoDbSettings>(
     builder.Configuration.GetSection("MongoDbSettings"));
 
+builder.Services.Configure<PortfolioUpdateOptions>(
+    builder.Configuration.GetSection("PortfolioUpdate"));
+builder.Services.AddScoped<INotificationHandler<StockPriceUpdatedEvent>, StockPriceUpdateHandler>();
+// 添加 MediatR
+builder.Services.AddMediatR(cfg => {
+    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
+});
+
+// 使用 Memory Cache（開發環境）或 Redis（生產環境）
+if (builder.Environment.IsDevelopment())
+{
+    builder.Services.AddDistributedMemoryCache();
+}
+else
+{
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = builder.Configuration.GetConnectionString("Redis");
+        options.InstanceName = "PortfolioManager:";
+    });
+}
+
+// 註冊服務
 builder.Services.AddSingleton<MongoDbService>();
+builder.Services.AddScoped<INotificationHandler<ExchangeRateUpdatedEvent>, ExchangeRateUpdateHandler>();
+builder.Services.AddScoped<PortfolioCalculationService>();
+builder.Services.AddScoped<PortfolioUpdateService>();
+builder.Services.AddScoped<PortfolioCacheService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Portfolio Management API",
-        Version = "v1",
-        Description = "An API for managing investment portfolios"
-    });
-    
-    // XML documentation configuration
-    try
-    {
-        var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-        var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-        if (File.Exists(xmlPath))
-        {
-            c.IncludeXmlComments(xmlPath);
-        }
-    }
-    catch
-    {
-        // If XML documentation file is not found, Swagger will still work
-        // but without the XML comments
-    }
-});
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
