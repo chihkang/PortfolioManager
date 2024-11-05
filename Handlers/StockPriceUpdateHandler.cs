@@ -6,48 +6,36 @@ using PortfolioManager.Configuration;
 
 namespace PortfolioManager.Handlers
 {
-    public class StockPriceUpdateHandler : INotificationHandler<StockPriceUpdatedEvent>
+    public class StockPriceUpdateHandler(
+        PortfolioUpdateService portfolioUpdateService,
+        PortfolioCacheService cacheService,
+        ILogger<StockPriceUpdateHandler> logger,
+        IOptions<PortfolioUpdateOptions> options)
+        : INotificationHandler<StockPriceUpdatedEvent>
     {
-        private readonly PortfolioUpdateService _portfolioUpdateService;
-        private readonly PortfolioCacheService _cacheService;
-        private readonly ILogger<StockPriceUpdateHandler> _logger;
-        private readonly IOptions<PortfolioUpdateOptions> _options;
-
-        public StockPriceUpdateHandler(
-            PortfolioUpdateService portfolioUpdateService,
-            PortfolioCacheService cacheService,
-            ILogger<StockPriceUpdateHandler> logger,
-            IOptions<PortfolioUpdateOptions> options)
-        {
-            _portfolioUpdateService = portfolioUpdateService;
-            _cacheService = cacheService;
-            _logger = logger;
-            _options = options;
-        }
-
         public async Task Handle(StockPriceUpdatedEvent notification, CancellationToken cancellationToken)
         {
             try
             {
-                _logger.LogInformation($"Handling stock price update for stock {notification.StockId}: " +
+                logger.LogInformation($"Handling stock price update for stock {notification.StockId}: " +
                     $"Old price: {notification.OldPrice}, New price: {notification.NewPrice}");
 
                 // 更新相關投資組合
-                await _portfolioUpdateService.HandleStockPriceUpdated(notification);
+                await portfolioUpdateService.HandleStockPriceUpdated(notification);
 
                 // 清除相關快取
-                var affectedPortfolios = await _portfolioUpdateService
+                var affectedPortfolios = await portfolioUpdateService
                     .GetAffectedPortfolios(notification.StockId);
 
                 foreach (var portfolioId in affectedPortfolios)
                 {
-                    await _cacheService.InvalidatePortfolioCache(portfolioId);
-                    _logger.LogInformation($"Invalidated cache for portfolio {portfolioId}");
+                    await cacheService.InvalidatePortfolioCache(portfolioId);
+                    logger.LogInformation($"Invalidated cache for portfolio {portfolioId}");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, 
+                logger.LogError(ex, 
                     $"Error handling stock price update for stock {notification.StockId}");
                 
                 // 執行重試邏輯
@@ -61,7 +49,7 @@ namespace PortfolioManager.Handlers
             CancellationToken cancellationToken)
         {
             var retryCount = 0;
-            var maxRetries = _options.Value.MaxRetryAttempts;
+            var maxRetries = options.Value.MaxRetryAttempts;
 
             while (retryCount < maxRetries)
             {
@@ -71,7 +59,7 @@ namespace PortfolioManager.Handlers
                     var delay = TimeSpan.FromSeconds(Math.Pow(2, retryCount));
                     await Task.Delay(delay, cancellationToken);
 
-                    _logger.LogInformation(
+                    logger.LogInformation(
                         $"Retrying stock price update for stock {notification.StockId}. " +
                         $"Attempt {retryCount + 1} of {maxRetries}");
 
@@ -83,7 +71,7 @@ namespace PortfolioManager.Handlers
                     retryCount++;
                     if (retryCount >= maxRetries)
                     {
-                        _logger.LogError(retryEx, 
+                        logger.LogError(retryEx, 
                             $"Final retry attempt failed for stock {notification.StockId}. " +
                             $"Original error: {originalException.Message}");
                         throw; // 重試全部失敗，拋出最後的異常

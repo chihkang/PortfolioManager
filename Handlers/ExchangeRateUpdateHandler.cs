@@ -107,8 +107,6 @@ namespace PortfolioManager.Handlers
                             "Error updating portfolio {PortfolioId} during exchange rate update",
                             portfolio.Id
                         );
-                        // 繼續處理其他 Portfolio
-                        continue;
                     }
                 }
 

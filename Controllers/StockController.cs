@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using MongoDB.Driver;
 using PortfolioManager.Events;
 using PortfolioManager.Models;
@@ -9,308 +10,148 @@ namespace PortfolioManager.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class StockController(MongoDbService mongoDbService, ILogger<StockController> logger, IMediator mediator)
-        : ControllerBase
+    public class StockController : ControllerBase
     {
-        /// <summary>
-        /// Get all stocks
-        /// </summary>
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Stock>>> GetStocks()
+        private readonly MongoDbService _mongoDbService;
+        private readonly ILogger<StockController> _logger;
+        private readonly IMediator _mediator;
+        private readonly IMemoryCache _cache;
+        private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
+
+        public StockController(
+            MongoDbService mongoDbService,
+            ILogger<StockController> logger,
+            IMediator mediator,
+            IMemoryCache cache)
         {
-            try
-            {
-                logger.LogInformation("Attempting to get all stocks");
-                var stocks = await mongoDbService.Stocks.Find(_ => true).ToListAsync();
-                
-                if (!stocks.Any())
-                {
-                    logger.LogWarning("No stocks found in database");
-                }
-                else
-                {
-                    logger.LogInformation($"Found {stocks.Count} stocks");
-                }
-                
-                return Ok(stocks);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error occurred while getting stocks");
-                return StatusCode(500, "An error occurred while retrieving stocks");
-            }
+            _mongoDbService = mongoDbService;
+            _logger = logger;
+            _mediator = mediator;
+            _cache = cache;
         }
 
         /// <summary>
-        /// Get stock by ID
-        /// </summary>
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Stock>> GetStock(string id)
-        {
-            try
-            {
-                var stock = await mongoDbService.Stocks.Find(s => s.Id == id).FirstOrDefaultAsync();
-                
-                if (stock == null)
-                {
-                    logger.LogWarning($"Stock with ID {id} not found");
-                    return NotFound();
-                }
-
-                return Ok(stock);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, $"Error occurred while getting stock with ID {id}");
-                return StatusCode(500, "An error occurred while retrieving the stock");
-            }
-        }
-
-        /// <summary>
-        /// Create a new stock
-        /// </summary>
-        [HttpPost]
-        public async Task<ActionResult<Stock>> CreateStock(Stock stock)
-        {
-            try
-            {
-                stock.LastUpdated = DateTime.UtcNow;
-                await mongoDbService.Stocks.InsertOneAsync(stock);
-                logger.LogInformation($"Created new stock: {stock.Name}");
-                return CreatedAtAction(nameof(GetStock), new { id = stock.Id }, stock);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "Error occurred while creating stock");
-                return StatusCode(500, "An error occurred while creating the stock");
-            }
-        }
-
-        /// <summary>
-        /// Update stock information
-        /// </summary>
-        [HttpPut("{id}/price")]
-        public async Task<IActionResult> UpdateStockPrice(string id, [FromBody] decimal newPrice)
-        {
-            try
-            {
-                var stock = await mongoDbService.Stocks
-                    .Find(s => s.Id == id)
-                    .FirstOrDefaultAsync();
-
-                if (stock == null)
-                    return NotFound();
-
-                var oldPrice = stock.Price;
-
-                // 更新股票價格
-                var update = Builders<Stock>.Update
-                    .Set(s => s.Price, newPrice)
-                    .Set(s => s.LastUpdated, DateTime.UtcNow);
-
-                await mongoDbService.Stocks.UpdateOneAsync(s => s.Id == id, update);
-
-                // 發布價格更新事件
-                await mediator.Publish(new StockPriceUpdatedEvent
-                {
-                    StockId = id,
-                    OldPrice = oldPrice,
-                    NewPrice = newPrice,
-                    UpdatedAt = DateTime.UtcNow
-                });
-
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, $"Error updating price for stock {id}");
-                return StatusCode(500, "An error occurred while updating the stock price");
-            }
-        }
-
-        /// <summary>
-        /// Delete stock
-        /// </summary>
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteStock(string id)
-        {
-            try
-            {
-                var result = await mongoDbService.Stocks.DeleteOneAsync(s => s.Id == id);
-                
-                if (result.DeletedCount == 0)
-                {
-                    logger.LogWarning($"Stock with ID {id} not found for deletion");
-                    return NotFound();
-                }
-
-                logger.LogInformation($"Deleted stock with ID: {id}");
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, $"Error occurred while deleting stock with ID {id}");
-                return StatusCode(500, "An error occurred while deleting the stock");
-            }
-        }
-        
-        /// <summary>
-        /// Update stock price by name (e.g., "2330:TPE")
+        /// Update stock price by name (e.g., "2330:TPE") with optimized performance
         /// </summary>
         [HttpPut("name/{name}/price")]
         public async Task<IActionResult> UpdateStockPriceByName(string name, [FromBody] decimal newPrice)
         {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return BadRequest("Stock name is required");
+            }
+
+            if (newPrice <= 0)
+            {
+                return BadRequest("Price must be greater than 0");
+            }
+
             try
             {
-                logger.LogInformation($"Attempting to update price for stock with name: {name}");
-
-                // 查找股票
-                var stock = await mongoDbService.Stocks
+                // Use projection to get only necessary fields
+                var stock = await _mongoDbService.Stocks
                     .Find(s => s.Name == name)
+                    .Project<StockPriceInfo>(Builders<Stock>.Projection
+                        .Expression(s => new StockPriceInfo
+                        {
+                            Id = s.Id,
+                            Price = s.Price,
+                            Currency = s.Currency
+                        }))
                     .FirstOrDefaultAsync();
 
                 if (stock == null)
                 {
-                    logger.LogWarning($"Stock with name {name} not found");
+                    _logger.LogWarning("Stock not found: {Name}", name);
                     return NotFound($"Stock with name {name} not found");
                 }
 
                 var oldPrice = stock.Price;
+                var now = DateTime.UtcNow;
 
-                // 檢查新價格是否有效
-                if (newPrice <= 0)
-                {
-                    logger.LogWarning($"Invalid price {newPrice} provided for stock {name}");
-                    return BadRequest("Price must be greater than 0");
-                }
-
-                // 更新股票價格
+                // Prepare update definition outside of UpdateOneAsync
                 var update = Builders<Stock>.Update
                     .Set(s => s.Price, newPrice)
-                    .Set(s => s.LastUpdated, DateTime.UtcNow);
+                    .Set(s => s.LastUpdated, now);
 
-                var updateResult = await mongoDbService.Stocks
-                    .UpdateOneAsync(s => s.Name == name, update);
+                // Execute update
+                var updateResult = await _mongoDbService.Stocks
+                    .WithWriteConcern(WriteConcern.WMajority)
+                    .UpdateOneAsync(
+                        Builders<Stock>.Filter.Eq(s => s.Name, name),
+                        update);
 
                 if (updateResult.ModifiedCount == 0)
                 {
-                    logger.LogWarning($"No changes were made to stock {name}");
+                    _logger.LogWarning("No changes made to stock: {Name}", name);
                     return StatusCode(500, "No changes were made to the stock");
                 }
 
-                // 發布價格更新事件
-                await mediator.Publish(new StockPriceUpdatedEvent
-                {
-                    StockId = stock.Id,
-                    OldPrice = oldPrice,
-                    NewPrice = newPrice,
-                    UpdatedAt = DateTime.UtcNow
-                });
+                // Remove from cache if exists
+                var cacheKey = $"stock_price_{name}";
+                _cache.Remove(cacheKey);
 
-                logger.LogInformation(
-                    $"Successfully updated price for stock {name} from {oldPrice} to {newPrice}"
-                );
+                // Fire and forget event publishing
+                _ = PublishPriceUpdateEvent(stock.Id, oldPrice, newPrice, now);
 
-                return Ok(new
+                var response = new UpdateStockPriceResponse
                 {
                     Name = name,
                     OldPrice = oldPrice,
                     NewPrice = newPrice,
                     Currency = stock.Currency,
-                    LastUpdated = DateTime.UtcNow
-                });
+                    LastUpdated = now
+                };
+
+                _logger.LogInformation(
+                    "Updated price for stock {Name}: {OldPrice} -> {NewPrice}",
+                    name, oldPrice, newPrice);
+
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, $"Error updating price for stock {name}");
+                _logger.LogError(ex, "Error updating price for stock {Name}", name);
                 return StatusCode(500, "An error occurred while updating the stock price");
             }
         }
 
-        /// <summary>
-        /// Update stock price by name with request body
-        /// </summary>
-        [HttpPut("price")]
-        public async Task<IActionResult> UpdateStockPriceByNameInBody([FromBody] UpdateStockPriceRequest request)
+        private async Task PublishPriceUpdateEvent(
+            string stockId, 
+            decimal oldPrice, 
+            decimal newPrice, 
+            DateTime updatedAt)
         {
             try
             {
-                logger.LogInformation($"Attempting to update price for stock with name: {request.Name}");
-
-                if (string.IsNullOrWhiteSpace(request.Name))
+                await _mediator.Publish(new StockPriceUpdatedEvent
                 {
-                    return BadRequest("Stock name is required");
-                }
-
-                // 查找股票
-                var stock = await mongoDbService.Stocks
-                    .Find(s => s.Name == request.Name)
-                    .FirstOrDefaultAsync();
-
-                if (stock == null)
-                {
-                    logger.LogWarning($"Stock with name {request.Name} not found");
-                    return NotFound($"Stock with name {request.Name} not found");
-                }
-
-                var oldPrice = stock.Price;
-
-                // 檢查新價格是否有效
-                if (request.NewPrice <= 0)
-                {
-                    logger.LogWarning($"Invalid price {request.NewPrice} provided for stock {request.Name}");
-                    return BadRequest("Price must be greater than 0");
-                }
-
-                // 更新股票價格
-                var update = Builders<Stock>.Update
-                    .Set(s => s.Price, request.NewPrice)
-                    .Set(s => s.LastUpdated, DateTime.UtcNow);
-
-                var updateResult = await mongoDbService.Stocks
-                    .UpdateOneAsync(s => s.Name == request.Name, update);
-
-                if (updateResult.ModifiedCount == 0)
-                {
-                    logger.LogWarning($"No changes were made to stock {request.Name}");
-                    return StatusCode(500, "No changes were made to the stock");
-                }
-
-                // 發布價格更新事件
-                await mediator.Publish(new StockPriceUpdatedEvent
-                {
-                    StockId = stock.Id,
+                    StockId = stockId,
                     OldPrice = oldPrice,
-                    NewPrice = request.NewPrice,
-                    UpdatedAt = DateTime.UtcNow
-                });
-
-                logger.LogInformation(
-                    $"Successfully updated price for stock {request.Name} from {oldPrice} to {request.NewPrice}"
-                );
-
-                return Ok(new
-                {
-                    Name = request.Name,
-                    OldPrice = oldPrice,
-                    NewPrice = request.NewPrice,
-                    Currency = stock.Currency,
-                    LastUpdated = DateTime.UtcNow
+                    NewPrice = newPrice,
+                    UpdatedAt = updatedAt
                 });
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, $"Error updating price for stock {request.Name}");
-                return StatusCode(500, "An error occurred while updating the stock price");
+                _logger.LogError(ex, "Failed to publish price update event for stock {Id}", stockId);
             }
         }
     }
 
-    public class UpdateStockPriceRequest
+    public class StockPriceInfo
+    {
+        public string Id { get; set; }
+        public decimal Price { get; set; }
+        public string Currency { get; set; }
+    }
+
+    public class UpdateStockPriceResponse
     {
         public string Name { get; set; }
+        public decimal OldPrice { get; set; }
         public decimal NewPrice { get; set; }
+        public string Currency { get; set; }
+        public DateTime LastUpdated { get; set; }
     }
-        
-    
 }

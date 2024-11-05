@@ -25,11 +25,153 @@ namespace PortfolioManager.Services
 
                 // Test connection and list collections
                 TestConnection();
+                
+                // Initialize indexes
+                CreateIndexesAsync().GetAwaiter().GetResult();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Failed to connect to MongoDB");
+                _logger.LogError(ex, "Failed to connect to MongoDB or create indexes");
                 throw;
+            }
+        }
+
+        private async Task CreateIndexesAsync()
+        {
+            try
+            {
+                _logger.LogInformation("Starting index creation...");
+                
+                // Create indexes for Stocks collection
+                await CreateStockIndexes();
+                
+                // Create indexes for Portfolios collection
+                await CreatePortfolioIndexes();
+                
+                // Create indexes for Users collection
+                await CreateUserIndexes();
+                
+                _logger.LogInformation("Successfully created all indexes");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to create indexes");
+                throw;
+            }
+        }
+
+        private async Task CreateStockIndexes()
+        {
+            var stockIndexes = new[]
+            {
+                new CreateIndexModel<Stock>(
+                    Builders<Stock>.IndexKeys.Ascending(s => s.Name),
+                    new CreateIndexOptions { Unique = true, Name = "idx_stock_name" }
+                ),
+                new CreateIndexModel<Stock>(
+                    Builders<Stock>.IndexKeys.Ascending(s => s.Alias),
+                    new CreateIndexOptions { Sparse = true, Name = "idx_stock_alias" }
+                ),
+                new CreateIndexModel<Stock>(
+                    Builders<Stock>.IndexKeys
+                        .Ascending(s => s.Currency)
+                        .Ascending(s => s.Price),
+                    new CreateIndexOptions { Name = "idx_stock_currency_price" }
+                )
+            };
+
+            await CreateIndexesWithRetry(Stocks, stockIndexes, "Stocks");
+        }
+
+        private async Task CreatePortfolioIndexes()
+        {
+            var portfolioIndexes = new[]
+            {
+                // Index for exchange rate queries
+                new CreateIndexModel<Portfolio>(
+                    Builders<Portfolio>.IndexKeys.Ascending(p => p.ExchangeRate),
+                    new CreateIndexOptions { Sparse = true, Name = "idx_portfolio_exchange_rate" }
+                ),
+                // Index for LastUpdated queries
+                new CreateIndexModel<Portfolio>(
+                    Builders<Portfolio>.IndexKeys.Descending(p => p.LastUpdated),
+                    new CreateIndexOptions { Name = "idx_portfolio_last_updated" }
+                ),
+                // Index for ExchangeRateUpdated queries
+                new CreateIndexModel<Portfolio>(
+                    Builders<Portfolio>.IndexKeys.Descending(p => p.ExchangeRateUpdated),
+                    new CreateIndexOptions { Sparse = true, Name = "idx_portfolio_exchange_rate_updated" }
+                )
+            };
+
+            await CreateIndexesWithRetry(Portfolios, portfolioIndexes, "Portfolios");
+        }
+
+
+        private async Task CreateUserIndexes()
+        {
+            var userIndexes = new[]
+            {
+                new CreateIndexModel<User>(
+                    Builders<User>.IndexKeys.Ascending(u => u.Email),
+                    new CreateIndexOptions { Unique = true, Name = "idx_user_email" }
+                ),
+                new CreateIndexModel<User>(
+                    Builders<User>.IndexKeys.Ascending(u => u.Username),
+                    new CreateIndexOptions { Unique = true, Name = "idx_user_username" }
+                )
+            };
+
+            await CreateIndexesWithRetry(Users, userIndexes, "Users");
+        }
+
+        private async Task CreateIndexesWithRetry<T>(
+            IMongoCollection<T> collection,
+            CreateIndexModel<T>[] indexes,
+            string collectionName,
+            int maxRetries = 3)
+        {
+            for (int attempt = 1; attempt <= maxRetries; attempt++)
+            {
+                try
+                {
+                    // Get existing indexes
+                    var existingIndexes = await collection.Indexes.ListAsync();
+                    var existingIndexNames = await existingIndexes.ToListAsync();
+
+                    _logger.LogInformation(
+                        $"Creating indexes for {collectionName} collection (Attempt {attempt}/{maxRetries})");
+
+                    // Create each index if it doesn't exist
+                    foreach (var index in indexes)
+                    {
+                        if (!existingIndexNames.Any(idx => idx["name"] == index.Options.Name))
+                        {
+                            await collection.Indexes.CreateOneAsync(index);
+                            _logger.LogInformation(
+                                $"Created index '{index.Options.Name}' for {collectionName} collection");
+                        }
+                        else
+                        {
+                            _logger.LogInformation(
+                                $"Index '{index.Options.Name}' already exists for {collectionName} collection");
+                        }
+                    }
+
+                    return; // Success - exit the retry loop
+                }
+                catch (Exception ex) when (attempt < maxRetries)
+                {
+                    _logger.LogWarning(ex,
+                        $"Failed to create indexes for {collectionName} collection (Attempt {attempt}/{maxRetries})");
+                    await Task.Delay(1000 * attempt); // Exponential backoff
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex,
+                        $"Failed to create indexes for {collectionName} collection after {maxRetries} attempts");
+                    throw;
+                }
             }
         }
 

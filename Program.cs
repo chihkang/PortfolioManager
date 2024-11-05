@@ -40,6 +40,7 @@ builder.Services.AddScoped<INotificationHandler<ExchangeRateUpdatedEvent>, Excha
 builder.Services.AddScoped<PortfolioCalculationService>();
 builder.Services.AddScoped<PortfolioUpdateService>();
 builder.Services.AddScoped<PortfolioCacheService>();
+builder.Services.AddMemoryCache(); // Add this line to register IMemoryCache
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

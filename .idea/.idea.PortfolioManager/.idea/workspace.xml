@@ -9,24 +9,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aab7e71f-2c37-4cbc-982f-c2f527840867" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Configuration/PortfolioUpdateOptions.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Controllers/ExchangeRateController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Events/ExchangeRateUpdatedEvent.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Events/StockPriceUpdatedEvent.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Extensions/DistributedCacheExtensions.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Handlers/ExchangeRateUpdateHandler.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Handlers/StockPriceUpdateHandler.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Models/PortfolioMetrics.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Services/PortfolioCacheService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Services/PortfolioCalculationService.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Services/PortfolioUpdateService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PortfolioManager/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PortfolioManager/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controllers/PortfolioController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/PortfolioController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controllers/ExchangeRateController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/ExchangeRateController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Controllers/StockController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/StockController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/User.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/User.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/PortfolioManager.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/PortfolioManager.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Handlers/ExchangeRateUpdateHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Handlers/ExchangeRateUpdateHandler.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Handlers/StockPriceUpdateHandler.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Handlers/StockPriceUpdateHandler.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/appsettings.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/MongoDbService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/MongoDbService.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,7 +105,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1730697528273</updated>
-      <workItem from="1730697529335" duration="19887000" />
+      <workItem from="1730697529335" duration="22539000" />
     </task>
     <servers />
   </component>
