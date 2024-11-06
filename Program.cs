@@ -39,7 +39,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment()|| app.Environment.IsProduction())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Portfolio Manager API V1");
+        c.RoutePrefix = string.Empty; // This makes Swagger UI available at the root URL
+    });
 }
 
 app.UseHttpsRedirection();
