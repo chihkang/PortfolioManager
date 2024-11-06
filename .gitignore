@@ -2,4 +2,7 @@ bin/
 obj/
 /packages/
 riderModule.iml
-/_ReSharper.Caches/appsettings*.json
+# Ignore application settings files
+appsettings.json
+!appsettings.template.json
+!appsettings.Development.json
