@@ -29,8 +29,6 @@ public class PortfolioCacheService(
 
         if (portfolio != null)
         {
-            await UpdatePortfolioValues(portfolio);
-            
             // 設置快取，有效期 5 分鐘
             var options = new DistributedCacheEntryOptions
             {
@@ -47,38 +45,5 @@ public class PortfolioCacheService(
     {
         await cache.RemoveAsync($"portfolio:{portfolioId}:values");
     }
-
-    private async Task UpdatePortfolioValues(Portfolio portfolio)
-    {
-        var stockIds = portfolio.Stocks.Select(s => s.StockId).ToList();
-        var stocks = await mongoDbService.Stocks
-            .Find(s => stockIds.Contains(s.Id))
-            .ToListAsync();
-
-        decimal totalValue = 0;
-        var stockPrices = stocks.ToDictionary(s => s.Id, s => s.Price);
-
-        foreach (var stock in portfolio.Stocks)
-        {
-            if (stockPrices.TryGetValue(stock.StockId, out decimal price))
-            {
-                decimal stockValue = price * stock.Quantity;
-                totalValue += stockValue;
-            }
-        }
-
-        foreach (var stock in portfolio.Stocks)
-        {
-            if (stockPrices.TryGetValue(stock.StockId, out decimal price))
-            {
-                decimal stockValue = price * stock.Quantity;
-                stock.PercentageOfTotal = totalValue > 0 
-                    ? Math.Round((stockValue / totalValue) * 100, 2)
-                    : 0;
-            }
-        }
-
-        portfolio.TotalValue = totalValue;
-        portfolio.LastUpdated = DateTime.UtcNow;
-    }
+    
 }

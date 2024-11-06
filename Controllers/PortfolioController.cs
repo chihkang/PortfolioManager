@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using PortfolioManager.Models;
 using PortfolioManager.Services;
@@ -54,19 +55,57 @@ namespace PortfolioManager.Controllers
         [HttpPut("{id}/stocks/{stockId}")]
         public async Task<IActionResult> UpdateStockQuantity(string id, string stockId, [FromBody] decimal quantity)
         {
-            var update = Builders<Portfolio>.Update
-                .Set(p => p.Stocks[-1].Quantity, quantity)
-                .Set(p => p.LastUpdated, DateTime.UtcNow);
+            try 
+            {
+                // 確認文檔是否存在
+                var portfolio = await mongoDbService.Portfolios
+                    .Find(p => p.Id == id)
+                    .FirstOrDefaultAsync();
+            
+                if (portfolio == null)
+                {
+                    return NotFound($"Portfolio with id {id} not found");
+                }
 
-            var result = await mongoDbService.Portfolios.UpdateOneAsync(
-                p => p.Id == id && p.Stocks.Any(s => s.StockId == stockId),
-                update
-            );
+                // 使用 BsonDecimal128 來確保正確的數字類型
+                var decimalQuantity = new BsonDecimal128(quantity);
+        
+                var update = Builders<Portfolio>.Update
+                    .Set("stocks.$[stock].quantity", decimalQuantity)
+                    .Set(p => p.LastUpdated, DateTime.UtcNow);
 
-            if (result.ModifiedCount == 0)
-                return NotFound();
+                var arrayFilters = new[]
+                {
+                    new BsonDocumentArrayFilterDefinition<BsonDocument>(
+                        new BsonDocument("stock.stockId", new ObjectId(stockId))  // 使用 ObjectId
+                    )
+                };
 
-            return NoContent();
+                var updateOptions = new UpdateOptions 
+                { 
+                    ArrayFilters = arrayFilters
+                };
+
+                var result = await mongoDbService.Portfolios.UpdateOneAsync(
+                    p => p.Id == id,
+                    update,
+                    updateOptions
+                );
+
+                if (result.ModifiedCount == 0)
+                {
+                    // 如果沒有更新任何文檔，記錄更多資訊
+                    logger.LogWarning($"No documents modified. Portfolio: {id}, Stock: {stockId}, Quantity: {quantity}");
+                    return NotFound($"Stock with id {stockId} not found in portfolio {id}");
+                }
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError($"Error updating stock quantity: {ex.Message}");
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -132,15 +171,12 @@ namespace PortfolioManager.Controllers
                     var enrichedPortfolio = new EnrichedPortfolioResponse
                     {
                         Id = portfolio.Id,
-                        TotalValue = portfolio.TotalValue,
-                        ExchangeRate = portfolio.ExchangeRate,
-                        ExchangeRateUpdated = portfolio.ExchangeRateUpdated,
+                        userId = portfolio.UserId,
                         LastUpdated = portfolio.LastUpdated,
                         Stocks = portfolio.Stocks.Select(ps => new EnrichedPortfolioStock
                         {
                             StockId = ps.StockId,
                             Quantity = ps.Quantity,
-                            PercentageOfTotal = ps.PercentageOfTotal,
                             StockDetails = stockDetails.GetValueOrDefault(ps.StockId)
                         }).ToList()
                     };
@@ -161,18 +197,15 @@ namespace PortfolioManager.Controllers
     public class EnrichedPortfolioResponse
     {
         public string Id { get; set; }
-        public decimal TotalValue { get; set; }
-        public decimal? ExchangeRate { get; set; }
-        public DateTime ExchangeRateUpdated { get; set; }
         public DateTime LastUpdated { get; set; }
         public List<EnrichedPortfolioStock> Stocks { get; set; }
+        public string userId { get; set; }
     }
 
     public class EnrichedPortfolioStock
     {
         public string StockId { get; set; }
         public decimal Quantity { get; set; }
-        public decimal PercentageOfTotal { get; set; }
         public Stock StockDetails { get; set; }
     }
 }

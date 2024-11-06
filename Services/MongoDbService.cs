@@ -87,22 +87,30 @@ namespace PortfolioManager.Services
         {
             var portfolioIndexes = new[]
             {
-                // Index for exchange rate queries
+                // 1. 使用者ID索引: 支援按使用者ID查詢Portfolio
                 new CreateIndexModel<Portfolio>(
-                    Builders<Portfolio>.IndexKeys.Ascending(p => p.ExchangeRate),
-                    new CreateIndexOptions { Sparse = true, Name = "idx_portfolio_exchange_rate" }
+                    Builders<Portfolio>.IndexKeys
+                        .Ascending(p => p.UserId),
+                    new CreateIndexOptions 
+                    { 
+                        Name = "idx_portfolio_user_id"
+                    }
                 ),
-                // Index for LastUpdated queries
+
+                // 2. 複合索引: 使用者ID + 最後更新時間
+                // 支援查詢特定使用者的Portfolio並按時間排序
                 new CreateIndexModel<Portfolio>(
-                    Builders<Portfolio>.IndexKeys.Descending(p => p.LastUpdated),
-                    new CreateIndexOptions { Name = "idx_portfolio_last_updated" }
+                    Builders<Portfolio>.IndexKeys
+                        .Ascending(p => p.UserId)
+                        .Descending(p => p.LastUpdated),
+                    new CreateIndexOptions 
+                    { 
+                        Name = "idx_portfolio_user_updated"
+                    }
                 ),
-                // Index for ExchangeRateUpdated queries
-                new CreateIndexModel<Portfolio>(
-                    Builders<Portfolio>.IndexKeys.Descending(p => p.ExchangeRateUpdated),
-                    new CreateIndexOptions { Sparse = true, Name = "idx_portfolio_exchange_rate_updated" }
-                )
+                
             };
+
 
             await CreateIndexesWithRetry(Portfolios, portfolioIndexes, "Portfolios");
         }

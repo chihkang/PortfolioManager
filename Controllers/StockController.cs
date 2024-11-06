@@ -90,10 +90,7 @@ namespace PortfolioManager.Controllers
                 // Remove from cache if exists
                 var cacheKey = $"stock_price_{name}";
                 _cache.Remove(cacheKey);
-
-                // Fire and forget event publishing
-                _ = PublishPriceUpdateEvent(stock.Id, oldPrice, newPrice, now);
-
+                
                 var response = new UpdateStockPriceResponse
                 {
                     Name = name,
@@ -113,28 +110,6 @@ namespace PortfolioManager.Controllers
             {
                 _logger.LogError(ex, "Error updating price for stock {Name}", name);
                 return StatusCode(500, "An error occurred while updating the stock price");
-            }
-        }
-
-        private async Task PublishPriceUpdateEvent(
-            string stockId, 
-            decimal oldPrice, 
-            decimal newPrice, 
-            DateTime updatedAt)
-        {
-            try
-            {
-                await _mediator.Publish(new StockPriceUpdatedEvent
-                {
-                    StockId = stockId,
-                    OldPrice = oldPrice,
-                    NewPrice = newPrice,
-                    UpdatedAt = updatedAt
-                });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to publish price update event for stock {Id}", stockId);
             }
         }
     }

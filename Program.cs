@@ -4,7 +4,6 @@ using Microsoft.Extensions.Caching.StackExchangeRedis;
 using PortfolioManager.Configuration;
 using PortfolioManager.Events;
 using PortfolioManager.Services;
-using PortfolioManager.Handlers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +13,6 @@ builder.Services.Configure<MongoDbSettings>(
 
 builder.Services.Configure<PortfolioUpdateOptions>(
     builder.Configuration.GetSection("PortfolioUpdate"));
-builder.Services.AddScoped<INotificationHandler<StockPriceUpdatedEvent>, StockPriceUpdateHandler>();
 // 添加 MediatR
 builder.Services.AddMediatR(cfg => {
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
@@ -36,8 +34,6 @@ else
 
 // 註冊服務
 builder.Services.AddSingleton<MongoDbService>();
-builder.Services.AddScoped<INotificationHandler<ExchangeRateUpdatedEvent>, ExchangeRateUpdateHandler>();
-builder.Services.AddScoped<PortfolioCalculationService>();
 builder.Services.AddScoped<PortfolioUpdateService>();
 builder.Services.AddScoped<PortfolioCacheService>();
 builder.Services.AddMemoryCache(); // Add this line to register IMemoryCache
