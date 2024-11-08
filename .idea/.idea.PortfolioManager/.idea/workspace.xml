@@ -10,11 +10,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aab7e71f-2c37-4cbc-982f-c2f527840867" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Controllers/ExchangeController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Exception/ScraperException.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Models/AddPortfolioStockDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Models/CreateUserDto.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PortfolioManager/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PortfolioManager/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/appsettings.Development.json" beforeDir="false" afterPath="$PROJECT_DIR$/appsettings.Development.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controllers/PortfolioController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/PortfolioController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controllers/UserController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/UserController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/MongoDbService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/MongoDbService.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,7 +33,7 @@
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/fd5bd808aa7343b9bc25e313b6b32996219600/5f/83ed38f8/ControllerBase.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="SWEA" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
@@ -124,7 +125,8 @@
       <workItem from="1730879429671" duration="285000" />
       <workItem from="1730880070962" duration="2181000" />
       <workItem from="1730884943850" duration="157000" />
-      <workItem from="1731028834888" duration="1181000" />
+      <workItem from="1731028834888" duration="1836000" />
+      <workItem from="1731043708537" duration="3195000" />
     </task>
     <servers />
   </component>

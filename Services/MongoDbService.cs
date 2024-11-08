@@ -10,6 +10,7 @@ namespace PortfolioManager.Services
         private readonly IMongoDatabase _database;
         private readonly ILogger<MongoDbService> _logger;
         private readonly MongoClient _client;
+        public IMongoClient Client => _client;
 
         public MongoDbService(IOptions<MongoDbSettings> settings, ILogger<MongoDbService> logger)
         {
