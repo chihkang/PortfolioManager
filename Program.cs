@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Caching.StackExchangeRedis;
 using PortfolioManager.Configuration;
+using PortfolioManager.Controllers;
 using PortfolioManager.Events;
 using PortfolioManager.Services;
 
@@ -30,7 +31,7 @@ builder.Services.Configure<PortfolioUpdateOptions>(
 builder.Services.AddMediatR(cfg => {
     cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
 });
-
+builder.Services.AddHttpClient<ExchangeRateController>();
 // 註冊服務
 builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddScoped<PortfolioUpdateService>();

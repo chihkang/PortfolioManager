@@ -10,10 +10,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aab7e71f-2c37-4cbc-982f-c2f527840867" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Controllers/ExchangeController.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Exception/ScraperException.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PortfolioManager/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PortfolioManager/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/appsettings.template.json" beforeDir="false" afterPath="$PROJECT_DIR$/appsettings.template.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/appsettings.Development.json" beforeDir="false" afterPath="$PROJECT_DIR$/appsettings.Development.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -28,6 +29,7 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/fb69109d67c049a0b5cb5b15b6653f9112c00/3d/0f9d6aba/IMediator.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/fd5bd808aa7343b9bc25e313b6b32996219600/5f/83ed38f8/ControllerBase.cs" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="SWEA" />
@@ -120,7 +122,9 @@
       <updated>1730697528273</updated>
       <workItem from="1730697529335" duration="39481000" />
       <workItem from="1730879429671" duration="285000" />
-      <workItem from="1730880070962" duration="1409000" />
+      <workItem from="1730880070962" duration="2181000" />
+      <workItem from="1730884943850" duration="157000" />
+      <workItem from="1731028834888" duration="1181000" />
     </task>
     <servers />
   </component>

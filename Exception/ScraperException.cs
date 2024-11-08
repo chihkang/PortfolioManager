@@ -1,0 +1,1 @@
+public class ScraperException(string message) : Exception(message);
