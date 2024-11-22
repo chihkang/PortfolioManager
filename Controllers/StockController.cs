@@ -31,6 +31,51 @@ namespace PortfolioManager.Controllers
         }
 
         /// <summary>
+        /// Get all stocks with minimal information (ID, Name, and Alias)
+        /// </summary>
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<StockListItemResponse>>> GetAllStocks()
+        {
+            try
+            {
+                const string cacheKey = "all_stocks_list";
+
+                // Try to get from cache first
+                if (_cache.TryGetValue(cacheKey, out IEnumerable<StockListItemResponse> cachedStocks))
+                {
+                    _logger.LogInformation("Returning cached stock list");
+                    return Ok(cachedStocks);
+                }
+
+                // If not in cache, get from database with projection
+                var stocks = await _mongoDbService.Stocks
+                    .Find(Builders<Stock>.Filter.Empty)
+                    .Project<StockListItemResponse>(Builders<Stock>.Projection
+                        .Expression(s => new StockListItemResponse
+                        {
+                            Id = s.Id,
+                            Name = s.Name,
+                            Alias = s.Alias
+                        }))
+                    .ToListAsync();
+
+                // Cache the result
+                var cacheEntryOptions = new MemoryCacheEntryOptions()
+                    .SetAbsoluteExpiration(CacheDuration);
+                
+                _cache.Set(cacheKey, stocks, cacheEntryOptions);
+
+                _logger.LogInformation("Retrieved {Count} stocks from database", stocks.Count);
+                return Ok(stocks);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving stock list");
+                return StatusCode(500, "An error occurred while retrieving the stock list");
+            }
+        }
+
+        /// <summary>
         /// Update stock price by name (e.g., "2330:TPE") with optimized performance
         /// </summary>
         [HttpPut("name/{name}/price")]
@@ -91,6 +136,9 @@ namespace PortfolioManager.Controllers
                 var cacheKey = $"stock_price_{name}";
                 _cache.Remove(cacheKey);
                 
+                // Also remove the all stocks list cache as it might contain old price
+                _cache.Remove("all_stocks_list");
+                
                 var response = new UpdateStockPriceResponse
                 {
                     Name = name,
@@ -128,5 +176,12 @@ namespace PortfolioManager.Controllers
         public decimal NewPrice { get; set; }
         public string Currency { get; set; }
         public DateTime LastUpdated { get; set; }
+    }
+
+    public class StockListItemResponse
+    {
+        public string Id { get; set; }
+        public string Name { get; set; }
+        public string Alias { get; set; }
     }
 }
