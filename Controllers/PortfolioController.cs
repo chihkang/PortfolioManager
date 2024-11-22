@@ -177,11 +177,95 @@ namespace PortfolioManager.Controllers
                 return StatusCode(500, "An error occurred while retrieving the portfolio");
             }
         }
+        
+        // 新增使用 StockId 的 endpoint
+/// <summary>
+/// Add stock to portfolio by stock ID
+/// </summary>
+[HttpPost("{id}/stocks/byId")]
+public async Task<IActionResult> AddStockToPortfolioById(string id, AddStockByIdDto stockDto)
+{
+    try
+    {
+        // 1. 驗證輸入
+        if (string.IsNullOrWhiteSpace(stockDto.StockId))
+        {
+            return BadRequest("Stock ID is required");
+        }
+
+        // 2. 檢查投資組合是否存在
+        var portfolio = await mongoDbService.Portfolios
+            .Find(p => p.Id == id)
+            .FirstOrDefaultAsync();
+
+        if (portfolio == null)
+        {
+            return NotFound($"Portfolio with id {id} not found");
+        }
+
+        // 3. 查找股票
+        var stock = await mongoDbService.Stocks
+            .Find(s => s.Id == stockDto.StockId)
+            .FirstOrDefaultAsync();
+
+        if (stock == null)
+        {
+            return NotFound($"Stock with id '{stockDto.StockId}' not found");
+        }
+
+        // 4. 檢查股票是否已經在投資組合中
+        if (portfolio.Stocks != null && 
+            portfolio.Stocks.Any(s => s.StockId == stockDto.StockId))
+        {
+            return Conflict($"Stock '{stock.Name}' is already in the portfolio");
+        }
+
+        // 5. 創建新的 PortfolioStock
+        var portfolioStock = new PortfolioStock
+        {
+            StockId = stockDto.StockId,
+            Quantity = stockDto.Quantity
+        };
+
+        // 6. 更新投資組合
+        var update = Builders<Portfolio>.Update
+            .Push(p => p.Stocks, portfolioStock)
+            .Set(p => p.LastUpdated, DateTime.UtcNow);
+
+        var result = await mongoDbService.Portfolios
+            .UpdateOneAsync(p => p.Id == id, update);
+
+        if (result.ModifiedCount == 0)
+        {
+            logger.LogError($"Failed to add stock to portfolio. Portfolio: {id}, Stock: {stockDto.StockId}");
+            return StatusCode(500, "Failed to add stock to portfolio");
+        }
+
+        // 7. 返回成功響應
+        return Ok(new 
+        {
+            Message = $"Successfully added {stock.Alias ?? stock.Name} to portfolio",
+            Stock = new
+            {
+                Id = stock.Id,
+                Name = stock.Name,
+                Alias = stock.Alias,
+                Quantity = stockDto.Quantity
+            }
+        });
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, $"Error adding stock to portfolio {id}");
+        return StatusCode(500, "An error occurred while adding stock to portfolio");
+    }
+}
+        
         /// <summary>
         /// Add stock to portfolio by stock name or alias
         /// </summary>
         [HttpPost("{id}/stocks")]
-        public async Task<IActionResult> AddStockToPortfolio(string id, AddPortfolioStockDto stockDto)
+        public async Task<IActionResult> AddStockToPortfolioByName(string id, AddPortfolioStockDto stockDto)
         {
             try
             {
@@ -278,5 +362,10 @@ namespace PortfolioManager.Controllers
         public string StockId { get; set; }
         public decimal Quantity { get; set; }
         public Stock StockDetails { get; set; }
+    }
+    public class AddStockByIdDto
+    {
+        public string StockId { get; set; }
+        public decimal Quantity { get; set; }
     }
 }
