@@ -10,20 +10,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aab7e71f-2c37-4cbc-982f-c2f527840867" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Controllers/PortfolioDailyValueController.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Jobs/RecordDailyValueJob.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Models/DailyValueData.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Models/PortfolioDailyValue.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Models/PortfolioDailyValueResponse.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Models/TimeRange.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Models/ValueSummary.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Services/PortfolioDailyValueService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PortfolioManager/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PortfolioManager/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controllers/PortfolioController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/PortfolioController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controllers/StockController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/StockController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PortfolioManager.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/PortfolioManager.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Services/MongoDbService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/MongoDbService.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -146,7 +134,8 @@
       <workItem from="1732246681629" duration="326000" />
       <workItem from="1732252096529" duration="1687000" />
       <workItem from="1732257028422" duration="640000" />
-      <workItem from="1732587779124" duration="8506000" />
+      <workItem from="1732587779124" duration="8957000" />
+      <workItem from="1732602828842" duration="300000" />
     </task>
     <servers />
   </component>
