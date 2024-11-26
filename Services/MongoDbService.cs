@@ -11,6 +11,7 @@ namespace PortfolioManager.Services
         private readonly ILogger<MongoDbService> _logger;
         private readonly MongoClient _client;
         public IMongoClient Client => _client;
+        private IMongoCollection<PortfolioDailyValue> _portfolioDailyValues;
 
         public MongoDbService(IOptions<MongoDbSettings> settings, ILogger<MongoDbService> logger)
         {
@@ -52,6 +53,9 @@ namespace PortfolioManager.Services
                 // Create indexes for Users collection
                 await CreateUserIndexes();
                 
+                // 新增 PortfolioDailyValues 的索引
+                await CreatePortfolioDailyValueIndexes();
+                
                 _logger.LogInformation("Successfully created all indexes");
             }
             catch (Exception ex)
@@ -65,15 +69,15 @@ namespace PortfolioManager.Services
         {
             var stockIndexes = new[]
             {
-                new CreateIndexModel<Stock>(
+                new CreateIndexModel<Stock?>(
                     Builders<Stock>.IndexKeys.Ascending(s => s.Name),
                     new CreateIndexOptions { Unique = true, Name = "idx_stock_name" }
                 ),
-                new CreateIndexModel<Stock>(
+                new CreateIndexModel<Stock?>(
                     Builders<Stock>.IndexKeys.Ascending(s => s.Alias),
                     new CreateIndexOptions { Sparse = true, Name = "idx_stock_alias" }
                 ),
-                new CreateIndexModel<Stock>(
+                new CreateIndexModel<Stock?>(
                     Builders<Stock>.IndexKeys
                         .Ascending(s => s.Currency)
                         .Ascending(s => s.Price),
@@ -183,7 +187,37 @@ namespace PortfolioManager.Services
                 }
             }
         }
+        
+        // 新增 PortfolioDailyValues 的索引創建方法
+        private async Task CreatePortfolioDailyValueIndexes()
+        {
+            var dailyValueIndexes = new[]
+            {
+                // 複合索引：portfolioId + date
+                new CreateIndexModel<PortfolioDailyValue>(
+                    Builders<PortfolioDailyValue>.IndexKeys
+                        .Ascending(p => p.PortfolioId)
+                        .Ascending(p => p.Date),
+                    new CreateIndexOptions 
+                    { 
+                        Name = "idx_portfolio_daily_value_portfolio_date"
+                    }
+                ),
+            
+                // 日期索引：支援日期範圍查詢
+                new CreateIndexModel<PortfolioDailyValue>(
+                    Builders<PortfolioDailyValue>.IndexKeys
+                        .Ascending(p => p.Date),
+                    new CreateIndexOptions 
+                    { 
+                        Name = "idx_portfolio_daily_value_date"
+                    }
+                )
+            };
 
+            await CreateIndexesWithRetry(PortfolioDailyValues, dailyValueIndexes, "PortfolioDailyValues");
+        }
+        
         private void TestConnection()
         {
             try
@@ -241,7 +275,7 @@ namespace PortfolioManager.Services
                 return _users;
             }
         }
-
+        
         // Portfolios Collection
         private IMongoCollection<Portfolio> _portfolios;
         public IMongoCollection<Portfolio> Portfolios
@@ -256,10 +290,23 @@ namespace PortfolioManager.Services
                 return _portfolios;
             }
         }
-
+        
+        public IMongoCollection<PortfolioDailyValue> PortfolioDailyValues
+        {
+            get
+            {
+                if (_portfolioDailyValues == null)
+                {
+                    _portfolioDailyValues = _database.GetCollection<PortfolioDailyValue>("portfolio_daily_values");
+                    _logger.LogInformation("Initialized PortfolioDailyValues collection");
+                }
+                return _portfolioDailyValues;
+            }
+        }
+        
         // Stocks Collection
-        private IMongoCollection<Stock> _stocks;
-        public IMongoCollection<Stock> Stocks
+        private IMongoCollection<Stock?> _stocks;
+        public IMongoCollection<Stock?> Stocks
         {
             get
             {
@@ -273,11 +320,11 @@ namespace PortfolioManager.Services
         }
 
         // Helper methods for diagnostics and testing
-        public async Task<List<Stock>> TestStocksQuery()
+        public async Task<List<Stock?>> TestStocksQuery()
         {
             try
             {
-                var filter = Builders<Stock>.Filter.Empty;
+                FilterDefinition<Stock?> filter = Builders<Stock>.Filter.Empty;
                 var stocks = await Stocks.Find(filter).ToListAsync();
                 _logger.LogInformation($"TestStocksQuery found {stocks.Count} stocks");
                 foreach (var stock in stocks)
@@ -325,8 +372,8 @@ namespace PortfolioManager.Services
 
     public class MongoDbSettings
     {
-        public string ConnectionString { get; set; }
-        public string DatabaseName { get; set; }
+        public string? ConnectionString { get; set; }
+        public string? DatabaseName { get; set; }
     }
 
     public class DatabaseStatusInfo

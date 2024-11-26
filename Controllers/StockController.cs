@@ -2,7 +2,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using MongoDB.Driver;
-using PortfolioManager.Events;
 using PortfolioManager.Models;
 using PortfolioManager.Services;
 
@@ -41,7 +40,7 @@ namespace PortfolioManager.Controllers
                 const string cacheKey = "all_stocks_list";
 
                 // Try to get from cache first
-                if (_cache.TryGetValue(cacheKey, out IEnumerable<StockListItemResponse> cachedStocks))
+                if (_cache.TryGetValue(cacheKey, out IEnumerable<StockListItemResponse>? cachedStocks))
                 {
                     _logger.LogInformation("Returning cached stock list");
                     return Ok(cachedStocks);
@@ -115,7 +114,7 @@ namespace PortfolioManager.Controllers
                 var now = DateTime.UtcNow;
 
                 // Prepare update definition outside of UpdateOneAsync
-                var update = Builders<Stock>.Update
+                UpdateDefinition<Stock> update = Builders<Stock>.Update
                     .Set(s => s.Price, newPrice)
                     .Set(s => s.LastUpdated, now);
 
@@ -174,7 +173,7 @@ namespace PortfolioManager.Controllers
         public string Name { get; set; }
         public decimal OldPrice { get; set; }
         public decimal NewPrice { get; set; }
-        public string Currency { get; set; }
+        public required string Currency { get; set; }
         public DateTime LastUpdated { get; set; }
     }
 

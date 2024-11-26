@@ -1,10 +1,8 @@
-using MediatR;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
 using PortfolioManager.Configuration;
 using PortfolioManager.Controllers;
-using PortfolioManager.Events;
+using PortfolioManager.Jobs;
 using PortfolioManager.Services;
+using Quartz;
 
 var builder = WebApplication.CreateBuilder(args);
 // 取得 Railway 的 PORT 環境變數
@@ -33,6 +31,24 @@ builder.Services.AddMediatR(cfg => {
 });
 builder.Services.AddHttpClient<ExchangeRateController>();
 // 註冊服務
+// 添加 Quartz
+builder.Services.AddQuartz(q =>
+{
+    var jobKey = new JobKey("RecordDailyValueJob");
+    
+    q.AddJob<RecordDailyValueJob>(opts => opts.WithIdentity(jobKey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("RecordDailyValueTrigger")
+        // 設定為每天下午 13:35 執行（台股收盤後）
+        .WithCronSchedule("0 35 13 ? * MON-SAT", x => x
+            .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Asia/Taipei")))
+    );
+});
+
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+builder.Services.AddScoped<PortfolioDailyValueService>();
 builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddScoped<PortfolioUpdateService>();
 builder.Services.AddScoped<PortfolioCacheService>();
