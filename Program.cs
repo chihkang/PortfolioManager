@@ -12,13 +12,13 @@ var port = Environment.GetEnvironmentVariable("PORT") ?? "3000";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // 配置 MongoDB 設定
-builder.Services.Configure<MongoDbSettings>(options => 
+builder.Services.Configure<MongoDbSettings>(options =>
 {
     // 優先使用環境變數，如果沒有則使用 appsettings.json
-    options.ConnectionString = Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING") 
+    options.ConnectionString = Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING")
                                ?? builder.Configuration.GetSection("MongoDbSettings:ConnectionString").Value;
-    
-    options.DatabaseName = Environment.GetEnvironmentVariable("MONGODB_DATABASE") 
+
+    options.DatabaseName = Environment.GetEnvironmentVariable("MONGODB_DATABASE")
                            ?? builder.Configuration.GetSection("MongoDbSettings:DatabaseName").Value;
 });
 
@@ -26,16 +26,14 @@ builder.Services.Configure<PortfolioUpdateOptions>(
     builder.Configuration.GetSection("PortfolioUpdate"));
 
 // 添加 MediatR
-builder.Services.AddMediatR(cfg => {
-    cfg.RegisterServicesFromAssembly(typeof(Program).Assembly);
-});
+builder.Services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(Program).Assembly); });
 builder.Services.AddHttpClient<ExchangeRateController>();
 // 註冊服務
 // 添加 Quartz
 builder.Services.AddQuartz(q =>
 {
     var jobKey = new JobKey("RecordDailyValueJob");
-    
+
     q.AddJob<RecordDailyValueJob>(opts => opts.WithIdentity(jobKey));
 
     q.AddTrigger(opts => opts
