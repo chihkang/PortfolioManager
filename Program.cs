@@ -36,11 +36,19 @@ builder.Services.AddQuartz(q =>
 
     q.AddJob<RecordDailyValueJob>(opts => opts.WithIdentity(jobKey));
 
+    // 週一至週五 13:35 的觸發器
     q.AddTrigger(opts => opts
         .ForJob(jobKey)
-        .WithIdentity("RecordDailyValueTrigger")
-        // 設定為每天下午 13:35 執行（台股收盤後）
-        .WithCronSchedule("0 35 13 ? * MON-SAT", x => x
+        .WithIdentity("WeekdayTrigger")
+        .WithCronSchedule("0 35 13 ? * MON-FRI", x => x
+            .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Asia/Taipei")))
+    );
+
+    // 週六 05:35 的觸發器
+    q.AddTrigger(opts => opts
+        .ForJob(jobKey)
+        .WithIdentity("SaturdayTrigger")
+        .WithCronSchedule("0 35 5 ? * SAT", x => x
             .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Asia/Taipei")))
     );
 });
