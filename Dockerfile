@@ -14,11 +14,12 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 COPY --from=build /app/publish .
 
-# 設置必要的環境變數
+# 設置環境變數,使用ARG定義PORT變數
+ARG PORT=80
 ENV ASPNETCORE_URLS=http://+:${PORT}
-ENV DOTNET_EnableDiagnostics=0
-ENV DOTNET_DiagnosticPorts=
-ENV DOTNET_DiagnosticPortOptions=
+ENV DOTNET_EnableDiagnostics="0"
+ENV DOTNET_DiagnosticPorts=""
+ENV DOTNET_DiagnosticPortOptions=""
 
-# 使用新的啟動命令
+# 修正ENTRYPOINT格式
 ENTRYPOINT ["dotnet", "PortfolioManager.dll", "--no-metrics"]

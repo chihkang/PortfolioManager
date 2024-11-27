@@ -1,17 +1,15 @@
 using Microsoft.Extensions.Caching.Distributed;
 using MongoDB.Driver;
+using PortfolioManager.Extensions;
 using PortfolioManager.Models;
 
 namespace PortfolioManager.Services;
 
 public class PortfolioCacheService(
     IDistributedCache cache,
-    MongoDbService mongoDbService,
-    ILogger<PortfolioCacheService> logger)
+    MongoDbService mongoDbService)
 {
-    private readonly ILogger<PortfolioCacheService> _logger = logger;
-
-    public async Task<Portfolio> GetPortfolioWithCurrentValues(string portfolioId)
+    public async Task<Portfolio?> GetPortfolioWithCurrentValues(string portfolioId)
     {
         var cacheKey = $"portfolio:{portfolioId}:values";
 
@@ -36,10 +34,5 @@ public class PortfolioCacheService(
         }
 
         return portfolio;
-    }
-
-    public async Task InvalidatePortfolioCache(string portfolioId)
-    {
-        await cache.RemoveAsync($"portfolio:{portfolioId}:values");
     }
 }

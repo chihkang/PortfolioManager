@@ -1,108 +1,68 @@
 using Microsoft.Extensions.Options;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using PortfolioManager.Configuration;
 using PortfolioManager.Models;
 
 namespace PortfolioManager.Services;
 
 public class MongoDbService
 {
+    // 使用常量定義重試策略
+    private const int MaxRetries = 3;
+    private const int BaseDelayMs = 1000;
     private readonly MongoClient _client;
     private readonly IMongoDatabase _database;
     private readonly ILogger<MongoDbService> _logger;
-    private IMongoCollection<PortfolioDailyValue> _portfolioDailyValues;
-
-    // Portfolios Collection
-    private IMongoCollection<Portfolio> _portfolios;
-
-    // Stocks Collection
-    private IMongoCollection<Stock?> _stocks;
-
-    // Users Collection
-    private IMongoCollection<User> _users;
+    private readonly Lazy<IMongoCollection<PortfolioDailyValue>> _portfolioDailyValues;
+    private readonly Lazy<IMongoCollection<Portfolio>> _portfolios;
+    private readonly Lazy<IMongoCollection<Stock>> _stocks;
+    private readonly Lazy<IMongoCollection<User>> _users;
 
     public MongoDbService(IOptions<MongoDbSettings> settings, ILogger<MongoDbService> logger)
     {
-        _logger = logger;
+        ArgumentNullException.ThrowIfNull(settings.Value.ConnectionString);
+        ArgumentNullException.ThrowIfNull(settings.Value.DatabaseName);
+
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
         try
         {
+            // Initialize in constructor
             var mongoSettings = MongoClientSettings.FromConnectionString(settings.Value.ConnectionString);
             mongoSettings.ServerApi = new ServerApi(ServerApiVersion.V1);
 
-            _logger.LogInformation($"Attempting to connect to MongoDB with database: {settings.Value.DatabaseName}");
             _client = new MongoClient(mongoSettings);
             _database = _client.GetDatabase(settings.Value.DatabaseName);
 
-            // Test connection and list collections
-            TestConnection();
+            // Initialize lazy collections
+            _users = new Lazy<IMongoCollection<User>>(() => _database.GetCollection<User>("users"));
+            _portfolios = new Lazy<IMongoCollection<Portfolio>>(() =>
+            {
+                var collection = _database.GetCollection<Portfolio>("portfolio"); // 這裡改為 portfolio
+                _logger.LogInformation("Initialized Portfolio collection");
+                return collection;
+            });
+            _portfolioDailyValues = new Lazy<IMongoCollection<PortfolioDailyValue>>(() =>
+                _database.GetCollection<PortfolioDailyValue>("portfolio_daily_values"));
+            _stocks = new Lazy<IMongoCollection<Stock>>(() => _database.GetCollection<Stock>("stocks"));
 
-            // Initialize indexes
+            TestConnection();
             CreateIndexesAsync().GetAwaiter().GetResult();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Failed to connect to MongoDB or create indexes");
+            _logger.LogError(ex, "Failed to initialize MongoDB service");
             throw;
         }
     }
 
+    // 公開屬性使用只讀訪問器
+    public IMongoCollection<User> Users => _users.Value;
+    public IMongoCollection<Portfolio> Portfolios => _portfolios.Value;
+    public IMongoCollection<PortfolioDailyValue> PortfolioDailyValues => _portfolioDailyValues.Value;
+    public IMongoCollection<Stock> Stocks => _stocks.Value;
     public IMongoClient Client => _client;
-
-    public IMongoCollection<User> Users
-    {
-        get
-        {
-            if (_users == null)
-            {
-                _users = _database.GetCollection<User>("users");
-                _logger.LogInformation("Initialized Users collection");
-            }
-
-            return _users;
-        }
-    }
-
-    public IMongoCollection<Portfolio> Portfolios
-    {
-        get
-        {
-            if (_portfolios == null)
-            {
-                _portfolios = _database.GetCollection<Portfolio>("portfolio");
-                _logger.LogInformation("Initialized Portfolios collection");
-            }
-
-            return _portfolios;
-        }
-    }
-
-    public IMongoCollection<PortfolioDailyValue> PortfolioDailyValues
-    {
-        get
-        {
-            if (_portfolioDailyValues == null)
-            {
-                _portfolioDailyValues = _database.GetCollection<PortfolioDailyValue>("portfolio_daily_values");
-                _logger.LogInformation("Initialized PortfolioDailyValues collection");
-            }
-
-            return _portfolioDailyValues;
-        }
-    }
-
-    public IMongoCollection<Stock?> Stocks
-    {
-        get
-        {
-            if (_stocks == null)
-            {
-                _stocks = _database.GetCollection<Stock>("stocks");
-                _logger.LogInformation("Initialized Stocks collection");
-            }
-
-            return _stocks;
-        }
-    }
 
     private async Task CreateIndexesAsync()
     {
@@ -110,17 +70,12 @@ public class MongoDbService
         {
             _logger.LogInformation("Starting index creation...");
 
-            // Create indexes for Stocks collection
-            await CreateStockIndexes();
-
-            // Create indexes for Portfolios collection
-            await CreatePortfolioIndexes();
-
-            // Create indexes for Users collection
-            await CreateUserIndexes();
-
-            // 新增 PortfolioDailyValues 的索引
-            await CreatePortfolioDailyValueIndexes();
+            await Task.WhenAll(
+                CreateStockIndexes(),
+                CreatePortfolioIndexes(),
+                CreateUserIndexes(),
+                CreatePortfolioDailyValueIndexes()
+            );
 
             _logger.LogInformation("Successfully created all indexes");
         }
@@ -133,17 +88,17 @@ public class MongoDbService
 
     private async Task CreateStockIndexes()
     {
-        var stockIndexes = new[]
+        var indexes = new[]
         {
-            new CreateIndexModel<Stock?>(
+            new CreateIndexModel<Stock>(
                 Builders<Stock>.IndexKeys.Ascending(s => s.Name),
                 new CreateIndexOptions { Unique = true, Name = "idx_stock_name" }
             ),
-            new CreateIndexModel<Stock?>(
+            new CreateIndexModel<Stock>(
                 Builders<Stock>.IndexKeys.Ascending(s => s.Alias),
                 new CreateIndexOptions { Sparse = true, Name = "idx_stock_alias" }
             ),
-            new CreateIndexModel<Stock?>(
+            new CreateIndexModel<Stock>(
                 Builders<Stock>.IndexKeys
                     .Ascending(s => s.Currency)
                     .Ascending(s => s.Price),
@@ -151,14 +106,13 @@ public class MongoDbService
             )
         };
 
-        await CreateIndexesWithRetry(Stocks, stockIndexes, "Stocks");
+        await CreateIndexesWithRetry(Stocks, indexes, nameof(Stocks));
     }
 
     private async Task CreatePortfolioIndexes()
     {
-        var portfolioIndexes = new[]
+        var indexes = new[]
         {
-            // 1. 使用者ID索引: 支援按使用者ID查詢Portfolio
             new CreateIndexModel<Portfolio>(
                 Builders<Portfolio>.IndexKeys
                     .Ascending(p => p.UserId),
@@ -167,9 +121,6 @@ public class MongoDbService
                     Name = "idx_portfolio_user_id"
                 }
             ),
-
-            // 2. 複合索引: 使用者ID + 最後更新時間
-            // 支援查詢特定使用者的Portfolio並按時間排序
             new CreateIndexModel<Portfolio>(
                 Builders<Portfolio>.IndexKeys
                     .Ascending(p => p.UserId)
@@ -181,14 +132,12 @@ public class MongoDbService
             )
         };
 
-
-        await CreateIndexesWithRetry(Portfolios, portfolioIndexes, "Portfolios");
+        await CreateIndexesWithRetry(Portfolios, indexes, "portfolio");
     }
-
 
     private async Task CreateUserIndexes()
     {
-        var userIndexes = new[]
+        var indexes = new[]
         {
             new CreateIndexModel<User>(
                 Builders<User>.IndexKeys.Ascending(u => u.Email),
@@ -200,61 +149,13 @@ public class MongoDbService
             )
         };
 
-        await CreateIndexesWithRetry(Users, userIndexes, "Users");
+        await CreateIndexesWithRetry(Users, indexes, nameof(Users));
     }
 
-    private async Task CreateIndexesWithRetry<T>(
-        IMongoCollection<T> collection,
-        CreateIndexModel<T>[] indexes,
-        string collectionName,
-        int maxRetries = 3)
-    {
-        for (var attempt = 1; attempt <= maxRetries; attempt++)
-            try
-            {
-                // Get existing indexes
-                var existingIndexes = await collection.Indexes.ListAsync();
-                var existingIndexNames = await existingIndexes.ToListAsync();
-
-                _logger.LogInformation(
-                    $"Creating indexes for {collectionName} collection (Attempt {attempt}/{maxRetries})");
-
-                // Create each index if it doesn't exist
-                foreach (var index in indexes)
-                    if (!existingIndexNames.Any(idx => idx["name"] == index.Options.Name))
-                    {
-                        await collection.Indexes.CreateOneAsync(index);
-                        _logger.LogInformation(
-                            $"Created index '{index.Options.Name}' for {collectionName} collection");
-                    }
-                    else
-                    {
-                        _logger.LogInformation(
-                            $"Index '{index.Options.Name}' already exists for {collectionName} collection");
-                    }
-
-                return; // Success - exit the retry loop
-            }
-            catch (Exception ex) when (attempt < maxRetries)
-            {
-                _logger.LogWarning(ex,
-                    $"Failed to create indexes for {collectionName} collection (Attempt {attempt}/{maxRetries})");
-                await Task.Delay(1000 * attempt); // Exponential backoff
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex,
-                    $"Failed to create indexes for {collectionName} collection after {maxRetries} attempts");
-                throw;
-            }
-    }
-
-    // 新增 PortfolioDailyValues 的索引創建方法
     private async Task CreatePortfolioDailyValueIndexes()
     {
-        var dailyValueIndexes = new[]
+        var indexes = new[]
         {
-            // 複合索引：portfolioId + date
             new CreateIndexModel<PortfolioDailyValue>(
                 Builders<PortfolioDailyValue>.IndexKeys
                     .Ascending(p => p.PortfolioId)
@@ -264,8 +165,6 @@ public class MongoDbService
                     Name = "idx_portfolio_daily_value_portfolio_date"
                 }
             ),
-
-            // 日期索引：支援日期範圍查詢
             new CreateIndexModel<PortfolioDailyValue>(
                 Builders<PortfolioDailyValue>.IndexKeys
                     .Ascending(p => p.Date),
@@ -276,66 +175,109 @@ public class MongoDbService
             )
         };
 
-        await CreateIndexesWithRetry(PortfolioDailyValues, dailyValueIndexes, "PortfolioDailyValues");
+        await CreateIndexesWithRetry(PortfolioDailyValues, indexes, nameof(PortfolioDailyValues));
+    }
+
+    private async Task CreateIndexesWithRetry<T>(
+        IMongoCollection<T> collection,
+        CreateIndexModel<T>[] indexes,
+        string collectionName)
+    {
+        for (var attempt = 1; attempt <= MaxRetries; attempt++)
+            try
+            {
+                var existingIndexes = await (await collection.Indexes
+                        .ListAsync())
+                    .ToListAsync();
+
+                var existingIndexNames = existingIndexes
+                    .Select(idx => idx["name"].AsString)
+                    .ToHashSet();
+
+                foreach (var index in indexes)
+                    if (!existingIndexNames.Contains(index.Options.Name))
+                    {
+                        await collection.Indexes.CreateOneAsync(index);
+                        _logger.LogInformation(
+                            "Created index '{IndexName}' for {CollectionName} collection",
+                            index.Options.Name,
+                            collectionName);
+                    }
+
+                return;
+            }
+            catch (Exception ex) when (attempt < MaxRetries)
+            {
+                _logger.LogWarning(ex,
+                    "Failed to create indexes for {CollectionName} (Attempt {Attempt}/{MaxRetries})",
+                    collectionName,
+                    attempt,
+                    MaxRetries);
+
+                await Task.Delay(BaseDelayMs * attempt);
+            }
     }
 
     private void TestConnection()
     {
         try
         {
-            // Test basic connection
+            // 測試基本連接
+            _logger.LogInformation("Attempting to connect to MongoDB...");
             _database.RunCommand<BsonDocument>(new BsonDocument("ping", 1));
-            _logger.LogInformation("MongoDB connection test successful");
+            _logger.LogInformation("Successfully connected to MongoDB");
 
-            // List all collections
+            // 獲取數據庫信息
+            var databaseStats = _database.RunCommand<BsonDocument>(new BsonDocument("dbStats", 1));
+            _logger.LogInformation("Database stats: {@DatabaseStats}", databaseStats);
+
+            // 列出並測試所有集合
             var collections = _database.ListCollections().ToList();
-            _logger.LogInformation(
-                $"Found {collections.Count} collections in database {_database.DatabaseNamespace.DatabaseName}:");
-            foreach (var collection in collections) _logger.LogInformation($"Collection: {collection["name"]}");
+            _logger.LogInformation("Found {CollectionCount} collections", collections.Count);
 
-            // Test access to each collection
-            TestCollectionAccess<User>("Users");
-            TestCollectionAccess<Portfolio>("Portfolios");
-            TestCollectionAccess<Stock>("Stocks");
+            foreach (var collection in collections)
+            {
+                var collectionName = collection["name"].AsString;
+                var collectionStats = _database.RunCommand<BsonDocument>(
+                    new BsonDocument("collStats", collectionName));
+                _logger.LogInformation(
+                    "Collection {CollectionName} stats: {@CollectionStats}",
+                    collectionName,
+                    collectionStats);
+            }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "MongoDB connection test failed");
-            throw new Exception("Failed to verify MongoDB connection and permissions", ex);
+            _logger.LogError(ex, "MongoDB connection verification failed");
+            throw new InvalidOperationException(
+                "Failed to verify MongoDB connection. Details: " + ex.Message,
+                ex);
         }
     }
 
-    private void TestCollectionAccess<T>(string collectionName)
+    public async Task<Stock[]> TestStocksQuery()
     {
         try
         {
-            var collection = _database.GetCollection<T>(collectionName);
-            var count = collection.CountDocuments(new BsonDocument());
-            _logger.LogInformation($"Successfully accessed {collectionName} collection. Document count: {count}");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, $"Failed to access {collectionName} collection");
-            throw;
-        }
-    }
-
-    // Helper methods for diagnostics and testing
-    public async Task<List<Stock?>> TestStocksQuery()
-    {
-        try
-        {
-            FilterDefinition<Stock?> filter = Builders<Stock>.Filter.Empty;
+            var filter = Builders<Stock>.Filter.Empty;
             var stocks = await Stocks.Find(filter).ToListAsync();
-            _logger.LogInformation($"TestStocksQuery found {stocks.Count} stocks");
+
+            _logger.LogInformation("TestStocksQuery retrieved {StockCount} stocks", stocks.Count);
+
             foreach (var stock in stocks)
                 _logger.LogInformation(
-                    $"Stock found: {stock.Name} ({stock.Alias}), Price: {stock.Price} {stock.Currency}");
-            return stocks;
+                    "Stock: {StockName} ({StockAlias}), Price: {StockPrice} {StockCurrency}",
+                    stock.Name,
+                    stock.Alias ?? "N/A",
+                    stock.Price,
+                    stock.Currency
+                );
+
+            return stocks.ToArray();
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error in TestStocksQuery");
+            _logger.LogError(ex, "Error occurred during TestStocksQuery execution");
             throw;
         }
     }
@@ -344,20 +286,19 @@ public class MongoDbService
     {
         try
         {
-            var collections = await _database.ListCollectionNamesAsync();
+            var collections = await (await _database.ListCollectionNamesAsync()).ToListAsync();
             var status = new DatabaseStatusInfo
             {
                 DatabaseName = _database.DatabaseNamespace.DatabaseName,
-                Collections = collections.ToList(),
+                Collections = collections,
                 CollectionCounts = new Dictionary<string, long>()
             };
 
-            // 獲取每個集合的文檔數量
-            foreach (var collection in collections.ToList())
+            foreach (var collection in collections)
             {
                 var count = await _database.GetCollection<BsonDocument>(collection)
                     .CountDocumentsAsync(new BsonDocument());
-                status.CollectionCounts.Add(collection, count);
+                status.CollectionCounts[collection] = count;
             }
 
             return status;
@@ -368,17 +309,4 @@ public class MongoDbService
             throw;
         }
     }
-}
-
-public class MongoDbSettings
-{
-    public string? ConnectionString { get; set; }
-    public string? DatabaseName { get; set; }
-}
-
-public class DatabaseStatusInfo
-{
-    public string DatabaseName { get; set; }
-    public List<string> Collections { get; set; }
-    public Dictionary<string, long> CollectionCounts { get; set; }
 }

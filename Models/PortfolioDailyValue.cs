@@ -7,10 +7,10 @@ public class PortfolioDailyValue
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; }
+    public string? Id { get; set; }
 
     [BsonRepresentation(BsonType.ObjectId)]
-    public string PortfolioId { get; set; }
+    public string? PortfolioId { get; set; }
 
     public DateTime Date { get; set; }
 

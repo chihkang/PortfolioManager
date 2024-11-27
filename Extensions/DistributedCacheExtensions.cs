@@ -2,9 +2,11 @@ using System.Text;
 using System.Text.Json;
 using Microsoft.Extensions.Caching.Distributed;
 
+namespace PortfolioManager.Extensions;
+
 public static class DistributedCacheExtensions
 {
-    public static async Task<T> GetAsync<T>(this IDistributedCache cache, string key)
+    public static async Task<T?> GetAsync<T>(this IDistributedCache cache, string key)
     {
         var data = await cache.GetAsync(key);
         if (data == null)

@@ -9,25 +9,15 @@ namespace PortfolioManager.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class StockController : ControllerBase
+public class StockController(
+    MongoDbService mongoDbService,
+    ILogger<StockController> logger,
+    IMediator mediator,
+    IMemoryCache cache)
+    : ControllerBase
 {
     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
-    private readonly IMemoryCache _cache;
-    private readonly ILogger<StockController> _logger;
-    private readonly IMediator _mediator;
-    private readonly MongoDbService _mongoDbService;
-
-    public StockController(
-        MongoDbService mongoDbService,
-        ILogger<StockController> logger,
-        IMediator mediator,
-        IMemoryCache cache)
-    {
-        _mongoDbService = mongoDbService;
-        _logger = logger;
-        _mediator = mediator;
-        _cache = cache;
-    }
+    public IMediator Mediator { get; } = mediator;
 
     /// <summary>
     ///     Get all stocks with minimal information (ID, Name, and Alias)
@@ -40,16 +30,16 @@ public class StockController : ControllerBase
             const string cacheKey = "all_stocks_list";
 
             // Try to get from cache first
-            if (_cache.TryGetValue(cacheKey, out IEnumerable<StockListItemResponse>? cachedStocks))
+            if (cache.TryGetValue(cacheKey, out IEnumerable<StockListItemResponse>? cachedStocks))
             {
-                _logger.LogInformation("Returning cached stock list");
+                logger.LogInformation("Returning cached stock list");
                 return Ok(cachedStocks);
             }
 
             // If not in cache, get from database with projection
-            var stocks = await _mongoDbService.Stocks
+            var stocks = await mongoDbService.Stocks
                 .Find(Builders<Stock>.Filter.Empty)
-                .Project<StockListItemResponse>(Builders<Stock>.Projection
+                .Project(Builders<Stock>.Projection
                     .Expression(s => new StockListItemResponse
                     {
                         Id = s.Id,
@@ -62,14 +52,14 @@ public class StockController : ControllerBase
             var cacheEntryOptions = new MemoryCacheEntryOptions()
                 .SetAbsoluteExpiration(CacheDuration);
 
-            _cache.Set(cacheKey, stocks, cacheEntryOptions);
+            cache.Set(cacheKey, stocks, cacheEntryOptions);
 
-            _logger.LogInformation("Retrieved {Count} stocks from database", stocks.Count);
+            logger.LogInformation("Retrieved {Count} stocks from database", stocks.Count);
             return Ok(stocks);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving stock list");
+            logger.LogError(ex, "Error retrieving stock list");
             return StatusCode(500, "An error occurred while retrieving the stock list");
         }
     }
@@ -87,9 +77,9 @@ public class StockController : ControllerBase
         try
         {
             // Use projection to get only necessary fields
-            var stock = await _mongoDbService.Stocks
-                .Find(s => s.Name == name)
-                .Project<StockPriceInfo>(Builders<Stock>.Projection
+            var stock = await mongoDbService.Stocks
+                .Find(s => s != null && s.Name == name)
+                .Project(Builders<Stock>.Projection
                     .Expression(s => new StockPriceInfo
                     {
                         Id = s.Id,
@@ -100,20 +90,19 @@ public class StockController : ControllerBase
 
             if (stock == null)
             {
-                _logger.LogWarning("Stock not found: {Name}", name);
+                logger.LogWarning("Stock not found: {Name}", name);
                 return NotFound($"Stock with name {name} not found");
             }
 
             var oldPrice = stock.Price;
             var now = DateTime.UtcNow;
 
-            // Prepare update definition outside of UpdateOneAsync
             UpdateDefinition<Stock> update = Builders<Stock>.Update
                 .Set(s => s.Price, newPrice)
                 .Set(s => s.LastUpdated, now);
 
             // Execute update
-            var updateResult = await _mongoDbService.Stocks
+            var updateResult = await mongoDbService.Stocks
                 .WithWriteConcern(WriteConcern.WMajority)
                 .UpdateOneAsync(
                     Builders<Stock>.Filter.Eq(s => s.Name, name),
@@ -121,16 +110,16 @@ public class StockController : ControllerBase
 
             if (updateResult.ModifiedCount == 0)
             {
-                _logger.LogWarning("No changes made to stock: {Name}", name);
+                logger.LogWarning("No changes made to stock: {Name}", name);
                 return StatusCode(500, "No changes were made to the stock");
             }
 
             // Remove from cache if exists
             var cacheKey = $"stock_price_{name}";
-            _cache.Remove(cacheKey);
+            cache.Remove(cacheKey);
 
             // Also remove the all stocks list cache as it might contain old price
-            _cache.Remove("all_stocks_list");
+            cache.Remove("all_stocks_list");
 
             var response = new UpdateStockPriceResponse
             {
@@ -141,7 +130,7 @@ public class StockController : ControllerBase
                 LastUpdated = now
             };
 
-            _logger.LogInformation(
+            logger.LogInformation(
                 "Updated price for stock {Name}: {OldPrice} -> {NewPrice}",
                 name, oldPrice, newPrice);
 
@@ -149,31 +138,8 @@ public class StockController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error updating price for stock {Name}", name);
+            logger.LogError(ex, "Error updating price for stock {Name}", name);
             return StatusCode(500, "An error occurred while updating the stock price");
         }
     }
-}
-
-public class StockPriceInfo
-{
-    public string Id { get; set; }
-    public decimal Price { get; set; }
-    public string Currency { get; set; }
-}
-
-public class UpdateStockPriceResponse
-{
-    public string Name { get; set; }
-    public decimal OldPrice { get; set; }
-    public decimal NewPrice { get; set; }
-    public required string Currency { get; set; }
-    public DateTime LastUpdated { get; set; }
-}
-
-public class StockListItemResponse
-{
-    public string Id { get; set; }
-    public string Name { get; set; }
-    public string Alias { get; set; }
 }

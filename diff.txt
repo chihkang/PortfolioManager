@@ -1,0 +1,1247 @@
+diff --git a/.idea/.idea.PortfolioManager/.idea/workspace.xml b/.idea/.idea.PortfolioManager/.idea/workspace.xml
+index b5f2fa9..a1c2556 100644
+--- a/.idea/.idea.PortfolioManager/.idea/workspace.xml
++++ b/.idea/.idea.PortfolioManager/.idea/workspace.xml
+@@ -10,27 +10,38 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="aab7e71f-2c37-4cbc-982f-c2f527840867" name="Changes" comment="">
+-      <change afterPath="$PROJECT_DIR$/global.json" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/.idea/.idea.PortfolioManager/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PortfolioManager/.idea/workspace.xml" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Configuration/PortfolioUpdateOptions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Configuration/PortfolioUpdateOptions.cs" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Controllers/ExchangeController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/ExchangeController.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Attribute/DtoAttribute.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Configuration/MongoDbSettings.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Jobs/ExchangeRateResponse.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Models/AddStockByIdDto.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Models/DatabaseStatusInfo.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Models/EnrichedPortfolioResponse.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Models/EnrichedPortfolioStock.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Models/Portfolio.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Models/PortfolioStock.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Models/Stock.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Models/StockListItemResponse.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Models/StockPriceInfo.cs" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/Models/UpdateStockPriceResponse.cs" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Controllers/ExchangeController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/ExchangeRateController.cs" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/Controllers/PortfolioController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/PortfolioController.cs" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Controllers/PortfolioDailyValueController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/PortfolioDailyValueController.cs" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/Controllers/StockController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/StockController.cs" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/Controllers/UserController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/UserController.cs" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Events/ExchangeRateUpdatedEvent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Events/ExchangeRateUpdatedEvent.cs" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Events/StockPriceUpdatedEvent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Events/StockPriceUpdatedEvent.cs" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Events/ExchangeRateUpdatedEvent.cs" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Events/StockPriceUpdatedEvent.cs" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/Exception/ScraperException.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Exception/ScraperException.cs" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/Extensions/DistributedCacheExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Extensions/DistributedCacheExtensions.cs" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/Jobs/RecordDailyValueJob.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Jobs/RecordDailyValueJob.cs" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/Models/AddPortfolioStockDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/AddPortfolioStockDto.cs" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/Models/CreateUserDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/CreateUserDto.cs" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Models/PortfolioMetrics.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/PortfolioMetrics.cs" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Models/PortfolioDailyValue.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/PortfolioDailyValue.cs" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Models/PortfolioDailyValueResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/PortfolioDailyValueResponse.cs" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Models/PortfolioMetrics.cs" beforeDir="false" />
+       <change beforePath="$PROJECT_DIR$/Models/User.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/User.cs" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/PortfolioManager.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/PortfolioManager.csproj" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/PortfolioManager.sln.DotSettings" beforeDir="false" afterPath="$PROJECT_DIR$/PortfolioManager.sln.DotSettings" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/Services/MongoDbService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/MongoDbService.cs" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/Services/PortfolioCacheService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/PortfolioCacheService.cs" afterDir="false" />
+-      <change beforePath="$PROJECT_DIR$/Services/PortfolioDailyValueService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/PortfolioDailyValueService.cs" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/Services/PortfolioUpdateService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/PortfolioUpdateService.cs" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+@@ -45,6 +56,7 @@
+     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+   </component>
+   <component name="HighlightingSettingsPerFile">
++    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/6d2342c247c64eb7a9b3702e481e4443f83e00/55/dd48a216/Exception.cs" root0="SKIP_HIGHLIGHTING" />
+     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/fb69109d67c049a0b5cb5b15b6653f9112c00/3d/0f9d6aba/IMediator.cs" root0="SKIP_HIGHLIGHTING" />
+     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/fd5bd808aa7343b9bc25e313b6b32996219600/5f/83ed38f8/ControllerBase.cs" root0="FORCE_HIGHLIGHTING" />
+     <setting file="file:///usr/local/share/dotnet/sdk/8.0.403/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.TargetFrameworkInference.targets" root0="FORCE_HIGHLIGHTING" />
+@@ -53,8 +65,9 @@
+   <component name="KubernetesApiProvider">{
+   &quot;isMigrated&quot;: true
+ }</component>
++  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
+   <component name="ProblemsViewState">
+-    <option name="selectedTabId" value="Toolset" />
++    <option name="selectedTabId" value="CurrentFile" />
+   </component>
+   <component name="ProjectColorInfo">{
+   &quot;associatedIndex&quot;: 2
+@@ -189,12 +202,14 @@
+       <workItem from="1732257028422" duration="640000" />
+       <workItem from="1732587779124" duration="8957000" />
+       <workItem from="1732602828842" duration="6133000" />
++      <workItem from="1732689824883" duration="6670000" />
+     </task>
+     <servers />
+   </component>
+   <component name="TypeScriptGeneratedFilesManager">
+     <option name="version" value="3" />
+   </component>
++  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
+   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+   <component name="VcsManagerConfiguration">
+     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
+diff --git a/Attribute/DtoAttribute.cs b/Attribute/DtoAttribute.cs
+index f06b417..cdc8409 100644
+--- a/Attribute/DtoAttribute.cs
++++ b/Attribute/DtoAttribute.cs
+@@ -1,6 +1,6 @@
+ namespace PortfolioManager.Attribute;
+ 
+-public class DtoAttribute
++[AttributeUsage(AttributeTargets.Class)]
++public class DtoAttribute : System.Attribute
+ {
+-    
+ }
+\ No newline at end of file
+diff --git a/Configuration/MongoDbSettings.cs b/Configuration/MongoDbSettings.cs
+index b4381f2..ed55334 100644
+--- a/Configuration/MongoDbSettings.cs
++++ b/Configuration/MongoDbSettings.cs
+@@ -1,5 +1,10 @@
+-namespace PortfolioManager.Services;
++using System.Diagnostics.CodeAnalysis;
++using PortfolioManager.Attribute;
+ 
++namespace PortfolioManager.Configuration;
++
++[Dto]
++[SuppressMessage("Rider", "UnusedAutoPropertyAccessor.Global")]
+ public class MongoDbSettings
+ {
+     public string? ConnectionString { get; set; }
+diff --git a/Controllers/PortfolioController.cs b/Controllers/PortfolioController.cs
+index 9f3619b..ad01a66 100644
+--- a/Controllers/PortfolioController.cs
++++ b/Controllers/PortfolioController.cs
+@@ -149,7 +149,7 @@ public class PortfolioController(MongoDbService mongoDbService, ILogger<Portfoli
+                     .Find(s => s != null && stockIds.Contains(s.Id))
+                     .ToListAsync();
+ 
+-                var stockDetails = stocks.ToDictionary(s => s?.Id);
++                var stockDetails = stocks.ToDictionary(s => s?.Id!);
+ 
+                 // 豐富回應資訊
+                 var enrichedPortfolio = new EnrichedPortfolioResponse
+@@ -161,7 +161,7 @@ public class PortfolioController(MongoDbService mongoDbService, ILogger<Portfoli
+                     {
+                         StockId = ps.StockId,
+                         Quantity = ps.Quantity,
+-                        StockDetails = stockDetails.GetValueOrDefault(ps.StockId)
++                        StockDetails = stockDetails.GetValueOrDefault(ps.StockId!)
+                     }).ToList()
+                 };
+ 
+@@ -323,25 +323,4 @@ public class PortfolioController(MongoDbService mongoDbService, ILogger<Portfoli
+             return StatusCode(500, "An error occurred while adding stock to portfolio");
+         }
+     }
+-}
+-
+-public class EnrichedPortfolioResponse
+-{
+-    public required string Id { get; set; }
+-    public DateTime LastUpdated { get; set; }
+-    public required List<EnrichedPortfolioStock> Stocks { get; set; }
+-    public required string UserId { get; set; }
+-}
+-
+-public class EnrichedPortfolioStock
+-{
+-    public required string StockId { get; set; }
+-    public decimal Quantity { get; set; }
+-    public Stock? StockDetails { get; set; }
+-}
+-
+-public class AddStockByIdDto
+-{
+-    public required string StockId { get; set; }
+-    public decimal Quantity { get; set; }
+ }
+\ No newline at end of file
+diff --git a/Controllers/StockController.cs b/Controllers/StockController.cs
+index c72d122..afb81f5 100644
+--- a/Controllers/StockController.cs
++++ b/Controllers/StockController.cs
+@@ -9,25 +9,15 @@ namespace PortfolioManager.Controllers;
+ 
+ [ApiController]
+ [Route("api/[controller]")]
+-public class StockController : ControllerBase
++public class StockController(
++    MongoDbService mongoDbService,
++    ILogger<StockController> logger,
++    IMediator mediator,
++    IMemoryCache cache)
++    : ControllerBase
+ {
+     private static readonly TimeSpan CacheDuration = TimeSpan.FromMinutes(5);
+-    private readonly IMemoryCache _cache;
+-    private readonly ILogger<StockController> _logger;
+-    private readonly IMediator _mediator;
+-    private readonly MongoDbService _mongoDbService;
+-
+-    public StockController(
+-        MongoDbService mongoDbService,
+-        ILogger<StockController> logger,
+-        IMediator mediator,
+-        IMemoryCache cache)
+-    {
+-        _mongoDbService = mongoDbService;
+-        _logger = logger;
+-        _mediator = mediator;
+-        _cache = cache;
+-    }
++    public IMediator Mediator { get; } = mediator;
+ 
+     /// <summary>
+     ///     Get all stocks with minimal information (ID, Name, and Alias)
+@@ -40,16 +30,16 @@ public class StockController : ControllerBase
+             const string cacheKey = "all_stocks_list";
+ 
+             // Try to get from cache first
+-            if (_cache.TryGetValue(cacheKey, out IEnumerable<StockListItemResponse>? cachedStocks))
++            if (cache.TryGetValue(cacheKey, out IEnumerable<StockListItemResponse>? cachedStocks))
+             {
+-                _logger.LogInformation("Returning cached stock list");
++                logger.LogInformation("Returning cached stock list");
+                 return Ok(cachedStocks);
+             }
+ 
+             // If not in cache, get from database with projection
+-            var stocks = await _mongoDbService.Stocks
++            var stocks = await mongoDbService.Stocks
+                 .Find(Builders<Stock>.Filter.Empty)
+-                .Project<StockListItemResponse>(Builders<Stock>.Projection
++                .Project(Builders<Stock>.Projection
+                     .Expression(s => new StockListItemResponse
+                     {
+                         Id = s.Id,
+@@ -62,14 +52,14 @@ public class StockController : ControllerBase
+             var cacheEntryOptions = new MemoryCacheEntryOptions()
+                 .SetAbsoluteExpiration(CacheDuration);
+ 
+-            _cache.Set(cacheKey, stocks, cacheEntryOptions);
++            cache.Set(cacheKey, stocks, cacheEntryOptions);
+ 
+-            _logger.LogInformation("Retrieved {Count} stocks from database", stocks.Count);
++            logger.LogInformation("Retrieved {Count} stocks from database", stocks.Count);
+             return Ok(stocks);
+         }
+         catch (Exception ex)
+         {
+-            _logger.LogError(ex, "Error retrieving stock list");
++            logger.LogError(ex, "Error retrieving stock list");
+             return StatusCode(500, "An error occurred while retrieving the stock list");
+         }
+     }
+@@ -87,9 +77,9 @@ public class StockController : ControllerBase
+         try
+         {
+             // Use projection to get only necessary fields
+-            var stock = await _mongoDbService.Stocks
+-                .Find(s => s.Name == name)
+-                .Project<StockPriceInfo>(Builders<Stock>.Projection
++            var stock = await mongoDbService.Stocks
++                .Find(s => s != null && s.Name == name)
++                .Project(Builders<Stock>.Projection
+                     .Expression(s => new StockPriceInfo
+                     {
+                         Id = s.Id,
+@@ -100,20 +90,19 @@ public class StockController : ControllerBase
+ 
+             if (stock == null)
+             {
+-                _logger.LogWarning("Stock not found: {Name}", name);
++                logger.LogWarning("Stock not found: {Name}", name);
+                 return NotFound($"Stock with name {name} not found");
+             }
+ 
+             var oldPrice = stock.Price;
+             var now = DateTime.UtcNow;
+ 
+-            // Prepare update definition outside of UpdateOneAsync
+             UpdateDefinition<Stock> update = Builders<Stock>.Update
+                 .Set(s => s.Price, newPrice)
+                 .Set(s => s.LastUpdated, now);
+ 
+             // Execute update
+-            var updateResult = await _mongoDbService.Stocks
++            var updateResult = await mongoDbService.Stocks
+                 .WithWriteConcern(WriteConcern.WMajority)
+                 .UpdateOneAsync(
+                     Builders<Stock>.Filter.Eq(s => s.Name, name),
+@@ -121,16 +110,16 @@ public class StockController : ControllerBase
+ 
+             if (updateResult.ModifiedCount == 0)
+             {
+-                _logger.LogWarning("No changes made to stock: {Name}", name);
++                logger.LogWarning("No changes made to stock: {Name}", name);
+                 return StatusCode(500, "No changes were made to the stock");
+             }
+ 
+             // Remove from cache if exists
+             var cacheKey = $"stock_price_{name}";
+-            _cache.Remove(cacheKey);
++            cache.Remove(cacheKey);
+ 
+             // Also remove the all stocks list cache as it might contain old price
+-            _cache.Remove("all_stocks_list");
++            cache.Remove("all_stocks_list");
+ 
+             var response = new UpdateStockPriceResponse
+             {
+@@ -141,7 +130,7 @@ public class StockController : ControllerBase
+                 LastUpdated = now
+             };
+ 
+-            _logger.LogInformation(
++            logger.LogInformation(
+                 "Updated price for stock {Name}: {OldPrice} -> {NewPrice}",
+                 name, oldPrice, newPrice);
+ 
+@@ -149,31 +138,8 @@ public class StockController : ControllerBase
+         }
+         catch (Exception ex)
+         {
+-            _logger.LogError(ex, "Error updating price for stock {Name}", name);
++            logger.LogError(ex, "Error updating price for stock {Name}", name);
+             return StatusCode(500, "An error occurred while updating the stock price");
+         }
+     }
+-}
+-
+-public class StockPriceInfo
+-{
+-    public string Id { get; set; }
+-    public decimal Price { get; set; }
+-    public string Currency { get; set; }
+-}
+-
+-public class UpdateStockPriceResponse
+-{
+-    public string Name { get; set; }
+-    public decimal OldPrice { get; set; }
+-    public decimal NewPrice { get; set; }
+-    public required string Currency { get; set; }
+-    public DateTime LastUpdated { get; set; }
+-}
+-
+-public class StockListItemResponse
+-{
+-    public string Id { get; set; }
+-    public string Name { get; set; }
+-    public string Alias { get; set; }
+ }
+\ No newline at end of file
+diff --git a/Dockerfile b/Dockerfile
+index c6d5fcb..30c3f83 100644
+--- a/Dockerfile
++++ b/Dockerfile
+@@ -14,11 +14,12 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0
+ WORKDIR /app
+ COPY --from=build /app/publish .
+ 
+-# 設置必要的環境變數
++# 設置環境變數,使用ARG定義PORT變數
++ARG PORT=80
+ ENV ASPNETCORE_URLS=http://+:${PORT}
+-ENV DOTNET_EnableDiagnostics=0
+-ENV DOTNET_DiagnosticPorts=
+-ENV DOTNET_DiagnosticPortOptions=
++ENV DOTNET_EnableDiagnostics="0"
++ENV DOTNET_DiagnosticPorts=""
++ENV DOTNET_DiagnosticPortOptions=""
+ 
+-# 使用新的啟動命令
++# 修正ENTRYPOINT格式
+ ENTRYPOINT ["dotnet", "PortfolioManager.dll", "--no-metrics"]
+\ No newline at end of file
+diff --git a/Extensions/DistributedCacheExtensions.cs b/Extensions/DistributedCacheExtensions.cs
+index 9a7c98c..5734bde 100644
+--- a/Extensions/DistributedCacheExtensions.cs
++++ b/Extensions/DistributedCacheExtensions.cs
+@@ -2,9 +2,11 @@ using System.Text;
+ using System.Text.Json;
+ using Microsoft.Extensions.Caching.Distributed;
+ 
++namespace PortfolioManager.Extensions;
++
+ public static class DistributedCacheExtensions
+ {
+-    public static async Task<T> GetAsync<T>(this IDistributedCache cache, string key)
++    public static async Task<T?> GetAsync<T>(this IDistributedCache cache, string key)
+     {
+         var data = await cache.GetAsync(key);
+         if (data == null)
+diff --git a/Jobs/RecordDailyValueJob.cs b/Jobs/RecordDailyValueJob.cs
+index eb9b952..aaac944 100644
+--- a/Jobs/RecordDailyValueJob.cs
++++ b/Jobs/RecordDailyValueJob.cs
+@@ -38,9 +38,4 @@ public class RecordDailyValueJob(
+             logger.LogError(ex, "Error executing daily value recording job");
+         }
+     }
+-}
+-
+-public abstract class ExchangeRateResponse
+-{
+-    public double ExchangeRate { get; set; }
+ }
+\ No newline at end of file
+diff --git a/Models/AddPortfolioStockDto.cs b/Models/AddPortfolioStockDto.cs
+index 44a6b4e..ee8702e 100644
+--- a/Models/AddPortfolioStockDto.cs
++++ b/Models/AddPortfolioStockDto.cs
+@@ -2,6 +2,6 @@ namespace PortfolioManager.Models;
+ 
+ public class AddPortfolioStockDto
+ {
+-    public string StockNameOrAlias { get; set; }
++    public string? StockNameOrAlias { get; set; }
+     public decimal Quantity { get; set; }
+ }
+\ No newline at end of file
+diff --git a/Models/AddStockByIdDto.cs b/Models/AddStockByIdDto.cs
+index d5bea19..7f1008f 100644
+--- a/Models/AddStockByIdDto.cs
++++ b/Models/AddStockByIdDto.cs
+@@ -1,4 +1,4 @@
+-namespace PortfolioManager.Controllers;
++namespace PortfolioManager.Models;
+ 
+ public class AddStockByIdDto
+ {
+diff --git a/Models/CreateUserDto.cs b/Models/CreateUserDto.cs
+index 5017ed3..44f82fe 100644
+--- a/Models/CreateUserDto.cs
++++ b/Models/CreateUserDto.cs
+@@ -2,5 +2,5 @@ namespace PortfolioManager.Models;
+ 
+ public class CreateUserDto
+ {
+-    public string Username { get; set; }
++    public string? Username { get; set; }
+ }
+\ No newline at end of file
+diff --git a/Models/DatabaseStatusInfo.cs b/Models/DatabaseStatusInfo.cs
+index e209b7d..960fa48 100644
+--- a/Models/DatabaseStatusInfo.cs
++++ b/Models/DatabaseStatusInfo.cs
+@@ -1,11 +1,7 @@
+-namespace PortfolioManager.Services;
++namespace PortfolioManager.Models;
+ 
+ public class DatabaseStatusInfo
+ {
+-    public required string DatabaseName { get; set; }
+-    public required List<string> Collections { get; set; }
+-    public required Dictionary<string, long> CollectionCounts { get; set; }
+-
+     public DatabaseStatusInfo()
+     {
+         Collections = new List<string>();
+@@ -18,4 +14,8 @@ public class DatabaseStatusInfo
+         Collections = new List<string>();
+         CollectionCounts = new Dictionary<string, long>();
+     }
++
++    public required string DatabaseName { get; set; }
++    public required List<string> Collections { get; set; }
++    public required Dictionary<string, long> CollectionCounts { get; set; }
+ }
+\ No newline at end of file
+diff --git a/Models/EnrichedPortfolioResponse.cs b/Models/EnrichedPortfolioResponse.cs
+index 2de380c..2c23090 100644
+--- a/Models/EnrichedPortfolioResponse.cs
++++ b/Models/EnrichedPortfolioResponse.cs
+@@ -1,4 +1,4 @@
+-namespace PortfolioManager.Controllers;
++namespace PortfolioManager.Models;
+ 
+ public class EnrichedPortfolioResponse
+ {
+diff --git a/Models/EnrichedPortfolioStock.cs b/Models/EnrichedPortfolioStock.cs
+index 687ff44..432ca61 100644
+--- a/Models/EnrichedPortfolioStock.cs
++++ b/Models/EnrichedPortfolioStock.cs
+@@ -1,6 +1,4 @@
+-using PortfolioManager.Models;
+-
+-namespace PortfolioManager.Controllers;
++namespace PortfolioManager.Models;
+ 
+ public class EnrichedPortfolioStock
+ {
+diff --git a/Models/PortfolioDailyValue.cs b/Models/PortfolioDailyValue.cs
+index 4d7274f..d824782 100644
+--- a/Models/PortfolioDailyValue.cs
++++ b/Models/PortfolioDailyValue.cs
+@@ -7,10 +7,10 @@ public class PortfolioDailyValue
+ {
+     [BsonId]
+     [BsonRepresentation(BsonType.ObjectId)]
+-    public string Id { get; set; }
++    public string? Id { get; set; }
+ 
+     [BsonRepresentation(BsonType.ObjectId)]
+-    public string PortfolioId { get; set; }
++    public string? PortfolioId { get; set; }
+ 
+     public DateTime Date { get; set; }
+ 
+diff --git a/Models/PortfolioDailyValueResponse.cs b/Models/PortfolioDailyValueResponse.cs
+index af7b0ed..2457dcc 100644
+--- a/Models/PortfolioDailyValueResponse.cs
++++ b/Models/PortfolioDailyValueResponse.cs
+@@ -2,7 +2,7 @@ namespace PortfolioManager.Models;
+ 
+ public class PortfolioDailyValueResponse
+ {
+-    public string PortfolioId { get; set; }
+-    public List<DailyValueData> Values { get; set; }
+-    public ValueSummary Summary { get; set; }
++    public string? PortfolioId { get; set; }
++    public List<DailyValueData>? Values { get; set; }
++    public ValueSummary? Summary { get; set; }
+ }
+\ No newline at end of file
+diff --git a/Models/StockListItemResponse.cs b/Models/StockListItemResponse.cs
+index ede3917..5a02fd6 100644
+--- a/Models/StockListItemResponse.cs
++++ b/Models/StockListItemResponse.cs
+@@ -1,7 +1,7 @@
+ using System.Diagnostics.CodeAnalysis;
+ using PortfolioManager.Attribute;
+ 
+-namespace PortfolioManager.Controllers;
++namespace PortfolioManager.Models;
+ 
+ [Dto]
+ [SuppressMessage("Rider", "UnusedAutoPropertyAccessor.Global")]
+diff --git a/Models/StockPriceInfo.cs b/Models/StockPriceInfo.cs
+index 509633b..d3aa9c4 100644
+--- a/Models/StockPriceInfo.cs
++++ b/Models/StockPriceInfo.cs
+@@ -1,7 +1,7 @@
+ using System.Diagnostics.CodeAnalysis;
+ using PortfolioManager.Attribute;
+ 
+-namespace PortfolioManager.Controllers;
++namespace PortfolioManager.Models;
+ 
+ [Dto]
+ [SuppressMessage("Rider", "UnusedAutoPropertyAccessor.Global")]
+diff --git a/Models/UpdateStockPriceResponse.cs b/Models/UpdateStockPriceResponse.cs
+index d0e4a65..e0ede6f 100644
+--- a/Models/UpdateStockPriceResponse.cs
++++ b/Models/UpdateStockPriceResponse.cs
+@@ -1,7 +1,7 @@
+ using System.Diagnostics.CodeAnalysis;
+ using PortfolioManager.Attribute;
+ 
+-namespace PortfolioManager.Controllers;
++namespace PortfolioManager.Models;
+ 
+ [Dto]
+ [SuppressMessage("Rider", "UnusedAutoPropertyAccessor.Global")]
+diff --git a/Models/User.cs b/Models/User.cs
+index 483d54c..99c991c 100644
+--- a/Models/User.cs
++++ b/Models/User.cs
+@@ -7,60 +7,17 @@ public class User
+ {
+     [BsonId]
+     [BsonRepresentation(BsonType.ObjectId)]
+-    public string Id { get; set; }
++    public string? Id { get; set; }
+ 
+-    [BsonElement("username")] public string Username { get; set; }
++    [BsonElement("username")] public string? Username { get; set; }
+ 
+-    [BsonElement("email")] public string Email { get; set; }
++    [BsonElement("email")] public string? Email { get; set; }
+ 
+     [BsonElement("portfolioId")]
+     [BsonRepresentation(BsonType.ObjectId)]
+-    public string PortfolioId { get; set; }
++    public string? PortfolioId { get; set; }
+ 
+     [BsonElement("createdAt")] public DateTime CreatedAt { get; set; }
+ 
+-    [BsonElement("settings")] public Dictionary<string, object> Settings { get; set; }
+-}
+-
+-public class Portfolio
+-{
+-    [BsonId]
+-    [BsonRepresentation(BsonType.ObjectId)]
+-    public string Id { get; set; }
+-
+-    [BsonElement("userId")]
+-    [BsonRepresentation(BsonType.ObjectId)]
+-    public string UserId { get; set; }
+-
+-    [BsonElement("lastUpdated")] public DateTime LastUpdated { get; set; }
+-
+-    [BsonElement("stocks")] public List<PortfolioStock> Stocks { get; set; } = new();
+-}
+-
+-public class PortfolioStock
+-{
+-    [BsonElement("stockId")]
+-    [BsonRepresentation(BsonType.ObjectId)]
+-    public string StockId { get; set; }
+-
+-    [BsonElement("quantity")]
+-    [BsonRepresentation(BsonType.Decimal128)]
+-    public decimal Quantity { get; set; }
+-}
+-
+-public class Stock
+-{
+-    [BsonId]
+-    [BsonRepresentation(BsonType.ObjectId)]
+-    public string Id { get; set; }
+-
+-    [BsonElement("name")] public string Name { get; set; }
+-
+-    [BsonElement("alias")] public string Alias { get; set; }
+-
+-    [BsonElement("price")] public decimal Price { get; set; }
+-
+-    [BsonElement("currency")] public string Currency { get; set; }
+-
+-    [BsonElement("lastUpdated")] public DateTime LastUpdated { get; set; }
++    [BsonElement("settings")] public Dictionary<string, object>? Settings { get; set; }
+ }
+\ No newline at end of file
+diff --git a/PortfolioManager.csproj b/PortfolioManager.csproj
+index fd21cee..3cd0fec 100644
+--- a/PortfolioManager.csproj
++++ b/PortfolioManager.csproj
+@@ -11,8 +11,8 @@
+ 
+     <ItemGroup>
+         <PackageReference Include="MediatR" Version="12.4.1"/>
+-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0" />
+-        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0" />
++        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.0"/>
++        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0"/>
+         <PackageReference Include="MongoDB.Driver" Version="3.0.0"/>
+         <PackageReference Include="Quartz" Version="3.12.0"/>
+         <PackageReference Include="Quartz.Extensions.Hosting" Version="3.12.0"/>
+@@ -20,6 +20,7 @@
+     </ItemGroup>
+ 
+     <ItemGroup>
++        <Folder Include="Events\"/>
+         <Folder Include="Handlers\"/>
+     </ItemGroup>
+ 
+diff --git a/PortfolioManager.sln.DotSettings b/PortfolioManager.sln.DotSettings
+index 4c46c8d..cf8c47b 100644
+--- a/PortfolioManager.sln.DotSettings
++++ b/PortfolioManager.sln.DotSettings
+@@ -1,4 +1,5 @@
+-﻿<wpf:ResourceDictionary xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib"
++﻿<wpf:ResourceDictionary xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
++                        xmlns:s="clr-namespace:System;assembly=mscorlib"
+                         xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                         xml:space="preserve">
+ 	<s:Boolean x:Key="/Default/CodeEditing/SuppressNullableWarningFix/Enabled/@EntryValue">False</s:Boolean></wpf:ResourceDictionary>
+\ No newline at end of file
+diff --git a/Services/MongoDbService.cs b/Services/MongoDbService.cs
+index 7b2bbdb..f0ba563 100644
+--- a/Services/MongoDbService.cs
++++ b/Services/MongoDbService.cs
+@@ -1,126 +1,81 @@
+ using Microsoft.Extensions.Options;
+ using MongoDB.Bson;
+ using MongoDB.Driver;
++using PortfolioManager.Configuration;
+ using PortfolioManager.Models;
+ 
+ namespace PortfolioManager.Services;
+ 
+ public class MongoDbService
+ {
++    // 使用常量定義重試策略
++    private const int MaxRetries = 3;
++    private const int BaseDelayMs = 1000;
+     private readonly MongoClient _client;
+     private readonly IMongoDatabase _database;
+     private readonly ILogger<MongoDbService> _logger;
+-    private IMongoCollection<PortfolioDailyValue> _portfolioDailyValues;
+-
+-    // Portfolios Collection
+-    private IMongoCollection<Portfolio> _portfolios;
+-
+-    // Stocks Collection
+-    private IMongoCollection<Stock?> _stocks;
+-
+-    // Users Collection
+-    private IMongoCollection<User> _users;
++    private readonly Lazy<IMongoCollection<PortfolioDailyValue>> _portfolioDailyValues;
++    private readonly Lazy<IMongoCollection<Portfolio>> _portfolios;
++    private readonly Lazy<IMongoCollection<Stock>> _stocks;
++    private readonly Lazy<IMongoCollection<User>> _users;
+ 
+     public MongoDbService(IOptions<MongoDbSettings> settings, ILogger<MongoDbService> logger)
+     {
+-        _logger = logger;
++        ArgumentNullException.ThrowIfNull(settings.Value.ConnectionString);
++        ArgumentNullException.ThrowIfNull(settings.Value.DatabaseName);
++
++        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
++
+         try
+         {
++            // Initialize in constructor
+             var mongoSettings = MongoClientSettings.FromConnectionString(settings.Value.ConnectionString);
+             mongoSettings.ServerApi = new ServerApi(ServerApiVersion.V1);
+ 
+-            _logger.LogInformation($"Attempting to connect to MongoDB with database: {settings.Value.DatabaseName}");
+             _client = new MongoClient(mongoSettings);
+             _database = _client.GetDatabase(settings.Value.DatabaseName);
+ 
+-            // Test connection and list collections
+-            TestConnection();
++            // Initialize lazy collections
++            _users = new Lazy<IMongoCollection<User>>(() => _database.GetCollection<User>("users"));
++            _portfolios = new Lazy<IMongoCollection<Portfolio>>(() =>
++            {
++                var collection = _database.GetCollection<Portfolio>("portfolio"); // 這裡改為 portfolio
++                _logger.LogInformation("Initialized Portfolio collection");
++                return collection;
++            });
++            _portfolioDailyValues = new Lazy<IMongoCollection<PortfolioDailyValue>>(() =>
++                _database.GetCollection<PortfolioDailyValue>("portfolio_daily_values"));
++            _stocks = new Lazy<IMongoCollection<Stock>>(() => _database.GetCollection<Stock>("stocks"));
+ 
+-            // Initialize indexes
++            TestConnection();
+             CreateIndexesAsync().GetAwaiter().GetResult();
+         }
+         catch (Exception ex)
+         {
+-            _logger.LogError(ex, "Failed to connect to MongoDB or create indexes");
++            _logger.LogError(ex, "Failed to initialize MongoDB service");
+             throw;
+         }
+     }
+ 
++    // 公開屬性使用只讀訪問器
++    public IMongoCollection<User> Users => _users.Value;
++    public IMongoCollection<Portfolio> Portfolios => _portfolios.Value;
++    public IMongoCollection<PortfolioDailyValue> PortfolioDailyValues => _portfolioDailyValues.Value;
++    public IMongoCollection<Stock> Stocks => _stocks.Value;
+     public IMongoClient Client => _client;
+ 
+-    public IMongoCollection<User> Users
+-    {
+-        get
+-        {
+-            if (_users == null)
+-            {
+-                _users = _database.GetCollection<User>("users");
+-                _logger.LogInformation("Initialized Users collection");
+-            }
+-
+-            return _users;
+-        }
+-    }
+-
+-    public IMongoCollection<Portfolio> Portfolios
+-    {
+-        get
+-        {
+-            if (_portfolios == null)
+-            {
+-                _portfolios = _database.GetCollection<Portfolio>("portfolio");
+-                _logger.LogInformation("Initialized Portfolios collection");
+-            }
+-
+-            return _portfolios;
+-        }
+-    }
+-
+-    public IMongoCollection<PortfolioDailyValue> PortfolioDailyValues
+-    {
+-        get
+-        {
+-            if (_portfolioDailyValues == null)
+-            {
+-                _portfolioDailyValues = _database.GetCollection<PortfolioDailyValue>("portfolio_daily_values");
+-                _logger.LogInformation("Initialized PortfolioDailyValues collection");
+-            }
+-
+-            return _portfolioDailyValues;
+-        }
+-    }
+-
+-    public IMongoCollection<Stock?> Stocks
+-    {
+-        get
+-        {
+-            if (_stocks == null)
+-            {
+-                _stocks = _database.GetCollection<Stock>("stocks");
+-                _logger.LogInformation("Initialized Stocks collection");
+-            }
+-
+-            return _stocks;
+-        }
+-    }
+-
+     private async Task CreateIndexesAsync()
+     {
+         try
+         {
+             _logger.LogInformation("Starting index creation...");
+ 
+-            // Create indexes for Stocks collection
+-            await CreateStockIndexes();
+-
+-            // Create indexes for Portfolios collection
+-            await CreatePortfolioIndexes();
+-
+-            // Create indexes for Users collection
+-            await CreateUserIndexes();
+-
+-            // 新增 PortfolioDailyValues 的索引
+-            await CreatePortfolioDailyValueIndexes();
++            await Task.WhenAll(
++                CreateStockIndexes(),
++                CreatePortfolioIndexes(),
++                CreateUserIndexes(),
++                CreatePortfolioDailyValueIndexes()
++            );
+ 
+             _logger.LogInformation("Successfully created all indexes");
+         }
+@@ -133,17 +88,17 @@ public class MongoDbService
+ 
+     private async Task CreateStockIndexes()
+     {
+-        var stockIndexes = new[]
++        var indexes = new[]
+         {
+-            new CreateIndexModel<Stock?>(
++            new CreateIndexModel<Stock>(
+                 Builders<Stock>.IndexKeys.Ascending(s => s.Name),
+                 new CreateIndexOptions { Unique = true, Name = "idx_stock_name" }
+             ),
+-            new CreateIndexModel<Stock?>(
++            new CreateIndexModel<Stock>(
+                 Builders<Stock>.IndexKeys.Ascending(s => s.Alias),
+                 new CreateIndexOptions { Sparse = true, Name = "idx_stock_alias" }
+             ),
+-            new CreateIndexModel<Stock?>(
++            new CreateIndexModel<Stock>(
+                 Builders<Stock>.IndexKeys
+                     .Ascending(s => s.Currency)
+                     .Ascending(s => s.Price),
+@@ -151,14 +106,13 @@ public class MongoDbService
+             )
+         };
+ 
+-        await CreateIndexesWithRetry(Stocks, stockIndexes, "Stocks");
++        await CreateIndexesWithRetry(Stocks, indexes, nameof(Stocks));
+     }
+ 
+     private async Task CreatePortfolioIndexes()
+     {
+-        var portfolioIndexes = new[]
++        var indexes = new[]
+         {
+-            // 1. 使用者ID索引: 支援按使用者ID查詢Portfolio
+             new CreateIndexModel<Portfolio>(
+                 Builders<Portfolio>.IndexKeys
+                     .Ascending(p => p.UserId),
+@@ -167,9 +121,6 @@ public class MongoDbService
+                     Name = "idx_portfolio_user_id"
+                 }
+             ),
+-
+-            // 2. 複合索引: 使用者ID + 最後更新時間
+-            // 支援查詢特定使用者的Portfolio並按時間排序
+             new CreateIndexModel<Portfolio>(
+                 Builders<Portfolio>.IndexKeys
+                     .Ascending(p => p.UserId)
+@@ -181,14 +132,12 @@ public class MongoDbService
+             )
+         };
+ 
+-
+-        await CreateIndexesWithRetry(Portfolios, portfolioIndexes, "Portfolios");
++        await CreateIndexesWithRetry(Portfolios, indexes, "portfolio");
+     }
+ 
+-
+     private async Task CreateUserIndexes()
+     {
+-        var userIndexes = new[]
++        var indexes = new[]
+         {
+             new CreateIndexModel<User>(
+                 Builders<User>.IndexKeys.Ascending(u => u.Email),
+@@ -200,61 +149,13 @@ public class MongoDbService
+             )
+         };
+ 
+-        await CreateIndexesWithRetry(Users, userIndexes, "Users");
++        await CreateIndexesWithRetry(Users, indexes, nameof(Users));
+     }
+ 
+-    private async Task CreateIndexesWithRetry<T>(
+-        IMongoCollection<T> collection,
+-        CreateIndexModel<T>[] indexes,
+-        string collectionName,
+-        int maxRetries = 3)
+-    {
+-        for (var attempt = 1; attempt <= maxRetries; attempt++)
+-            try
+-            {
+-                // Get existing indexes
+-                var existingIndexes = await collection.Indexes.ListAsync();
+-                var existingIndexNames = await existingIndexes.ToListAsync();
+-
+-                _logger.LogInformation(
+-                    $"Creating indexes for {collectionName} collection (Attempt {attempt}/{maxRetries})");
+-
+-                // Create each index if it doesn't exist
+-                foreach (var index in indexes)
+-                    if (!existingIndexNames.Any(idx => idx["name"] == index.Options.Name))
+-                    {
+-                        await collection.Indexes.CreateOneAsync(index);
+-                        _logger.LogInformation(
+-                            $"Created index '{index.Options.Name}' for {collectionName} collection");
+-                    }
+-                    else
+-                    {
+-                        _logger.LogInformation(
+-                            $"Index '{index.Options.Name}' already exists for {collectionName} collection");
+-                    }
+-
+-                return; // Success - exit the retry loop
+-            }
+-            catch (Exception ex) when (attempt < maxRetries)
+-            {
+-                _logger.LogWarning(ex,
+-                    $"Failed to create indexes for {collectionName} collection (Attempt {attempt}/{maxRetries})");
+-                await Task.Delay(1000 * attempt); // Exponential backoff
+-            }
+-            catch (Exception ex)
+-            {
+-                _logger.LogError(ex,
+-                    $"Failed to create indexes for {collectionName} collection after {maxRetries} attempts");
+-                throw;
+-            }
+-    }
+-
+-    // 新增 PortfolioDailyValues 的索引創建方法
+     private async Task CreatePortfolioDailyValueIndexes()
+     {
+-        var dailyValueIndexes = new[]
++        var indexes = new[]
+         {
+-            // 複合索引：portfolioId + date
+             new CreateIndexModel<PortfolioDailyValue>(
+                 Builders<PortfolioDailyValue>.IndexKeys
+                     .Ascending(p => p.PortfolioId)
+@@ -264,8 +165,6 @@ public class MongoDbService
+                     Name = "idx_portfolio_daily_value_portfolio_date"
+                 }
+             ),
+-
+-            // 日期索引：支援日期範圍查詢
+             new CreateIndexModel<PortfolioDailyValue>(
+                 Builders<PortfolioDailyValue>.IndexKeys
+                     .Ascending(p => p.Date),
+@@ -276,66 +175,109 @@ public class MongoDbService
+             )
+         };
+ 
+-        await CreateIndexesWithRetry(PortfolioDailyValues, dailyValueIndexes, "PortfolioDailyValues");
++        await CreateIndexesWithRetry(PortfolioDailyValues, indexes, nameof(PortfolioDailyValues));
++    }
++
++    private async Task CreateIndexesWithRetry<T>(
++        IMongoCollection<T> collection,
++        CreateIndexModel<T>[] indexes,
++        string collectionName)
++    {
++        for (var attempt = 1; attempt <= MaxRetries; attempt++)
++            try
++            {
++                var existingIndexes = await (await collection.Indexes
++                        .ListAsync())
++                    .ToListAsync();
++
++                var existingIndexNames = existingIndexes
++                    .Select(idx => idx["name"].AsString)
++                    .ToHashSet();
++
++                foreach (var index in indexes)
++                    if (!existingIndexNames.Contains(index.Options.Name))
++                    {
++                        await collection.Indexes.CreateOneAsync(index);
++                        _logger.LogInformation(
++                            "Created index '{IndexName}' for {CollectionName} collection",
++                            index.Options.Name,
++                            collectionName);
++                    }
++
++                return;
++            }
++            catch (Exception ex) when (attempt < MaxRetries)
++            {
++                _logger.LogWarning(ex,
++                    "Failed to create indexes for {CollectionName} (Attempt {Attempt}/{MaxRetries})",
++                    collectionName,
++                    attempt,
++                    MaxRetries);
++
++                await Task.Delay(BaseDelayMs * attempt);
++            }
+     }
+ 
+     private void TestConnection()
+     {
+         try
+         {
+-            // Test basic connection
++            // 測試基本連接
++            _logger.LogInformation("Attempting to connect to MongoDB...");
+             _database.RunCommand<BsonDocument>(new BsonDocument("ping", 1));
+-            _logger.LogInformation("MongoDB connection test successful");
++            _logger.LogInformation("Successfully connected to MongoDB");
+ 
+-            // List all collections
++            // 獲取數據庫信息
++            var databaseStats = _database.RunCommand<BsonDocument>(new BsonDocument("dbStats", 1));
++            _logger.LogInformation("Database stats: {@DatabaseStats}", databaseStats);
++
++            // 列出並測試所有集合
+             var collections = _database.ListCollections().ToList();
+-            _logger.LogInformation(
+-                $"Found {collections.Count} collections in database {_database.DatabaseNamespace.DatabaseName}:");
+-            foreach (var collection in collections) _logger.LogInformation($"Collection: {collection["name"]}");
+-
+-            // Test access to each collection
+-            TestCollectionAccess<User>("Users");
+-            TestCollectionAccess<Portfolio>("Portfolios");
+-            TestCollectionAccess<Stock>("Stocks");
+-        }
+-        catch (Exception ex)
+-        {
+-            _logger.LogError(ex, "MongoDB connection test failed");
+-            throw new Exception("Failed to verify MongoDB connection and permissions", ex);
+-        }
+-    }
++            _logger.LogInformation("Found {CollectionCount} collections", collections.Count);
+ 
+-    private void TestCollectionAccess<T>(string collectionName)
+-    {
+-        try
+-        {
+-            var collection = _database.GetCollection<T>(collectionName);
+-            var count = collection.CountDocuments(new BsonDocument());
+-            _logger.LogInformation($"Successfully accessed {collectionName} collection. Document count: {count}");
++            foreach (var collection in collections)
++            {
++                var collectionName = collection["name"].AsString;
++                var collectionStats = _database.RunCommand<BsonDocument>(
++                    new BsonDocument("collStats", collectionName));
++                _logger.LogInformation(
++                    "Collection {CollectionName} stats: {@CollectionStats}",
++                    collectionName,
++                    collectionStats);
++            }
+         }
+         catch (Exception ex)
+         {
+-            _logger.LogError(ex, $"Failed to access {collectionName} collection");
+-            throw;
++            _logger.LogError(ex, "MongoDB connection verification failed");
++            throw new InvalidOperationException(
++                "Failed to verify MongoDB connection. Details: " + ex.Message,
++                ex);
+         }
+     }
+ 
+-    // Helper methods for diagnostics and testing
+-    public async Task<List<Stock?>> TestStocksQuery()
++    public async Task<Stock[]> TestStocksQuery()
+     {
+         try
+         {
+-            FilterDefinition<Stock?> filter = Builders<Stock>.Filter.Empty;
++            var filter = Builders<Stock>.Filter.Empty;
+             var stocks = await Stocks.Find(filter).ToListAsync();
+-            _logger.LogInformation($"TestStocksQuery found {stocks.Count} stocks");
++
++            _logger.LogInformation("TestStocksQuery retrieved {StockCount} stocks", stocks.Count);
++
+             foreach (var stock in stocks)
+                 _logger.LogInformation(
+-                    $"Stock found: {stock.Name} ({stock.Alias}), Price: {stock.Price} {stock.Currency}");
+-            return stocks;
++                    "Stock: {StockName} ({StockAlias}), Price: {StockPrice} {StockCurrency}",
++                    stock.Name,
++                    stock.Alias ?? "N/A",
++                    stock.Price,
++                    stock.Currency
++                );
++
++            return stocks.ToArray();
+         }
+         catch (Exception ex)
+         {
+-            _logger.LogError(ex, "Error in TestStocksQuery");
++            _logger.LogError(ex, "Error occurred during TestStocksQuery execution");
+             throw;
+         }
+     }
+@@ -344,20 +286,19 @@ public class MongoDbService
+     {
+         try
+         {
+-            var collections = await _database.ListCollectionNamesAsync();
++            var collections = await (await _database.ListCollectionNamesAsync()).ToListAsync();
+             var status = new DatabaseStatusInfo
+             {
+                 DatabaseName = _database.DatabaseNamespace.DatabaseName,
+-                Collections = collections.ToList(),
++                Collections = collections,
+                 CollectionCounts = new Dictionary<string, long>()
+             };
+ 
+-            // 獲取每個集合的文檔數量
+-            foreach (var collection in collections.ToList())
++            foreach (var collection in collections)
+             {
+                 var count = await _database.GetCollection<BsonDocument>(collection)
+                     .CountDocumentsAsync(new BsonDocument());
+-                status.CollectionCounts.Add(collection, count);
++                status.CollectionCounts[collection] = count;
+             }
+ 
+             return status;
+@@ -368,17 +309,4 @@ public class MongoDbService
+             throw;
+         }
+     }
+-}
+-
+-public class MongoDbSettings
+-{
+-    public string? ConnectionString { get; set; }
+-    public string? DatabaseName { get; set; }
+-}
+-
+-public class DatabaseStatusInfo
+-{
+-    public string DatabaseName { get; set; }
+-    public List<string> Collections { get; set; }
+-    public Dictionary<string, long> CollectionCounts { get; set; }
+ }
+\ No newline at end of file
+diff --git a/Services/PortfolioCacheService.cs b/Services/PortfolioCacheService.cs
+index e0af5cc..87f001b 100644
+--- a/Services/PortfolioCacheService.cs
++++ b/Services/PortfolioCacheService.cs
+@@ -1,17 +1,15 @@
+ using Microsoft.Extensions.Caching.Distributed;
+ using MongoDB.Driver;
++using PortfolioManager.Extensions;
+ using PortfolioManager.Models;
+ 
+ namespace PortfolioManager.Services;
+ 
+ public class PortfolioCacheService(
+     IDistributedCache cache,
+-    MongoDbService mongoDbService,
+-    ILogger<PortfolioCacheService> logger)
++    MongoDbService mongoDbService)
+ {
+-    private readonly ILogger<PortfolioCacheService> _logger = logger;
+-
+-    public async Task<Portfolio> GetPortfolioWithCurrentValues(string portfolioId)
++    public async Task<Portfolio?> GetPortfolioWithCurrentValues(string portfolioId)
+     {
+         var cacheKey = $"portfolio:{portfolioId}:values";
+ 
+@@ -37,9 +35,4 @@ public class PortfolioCacheService(
+ 
+         return portfolio;
+     }
+-
+-    public async Task InvalidatePortfolioCache(string portfolioId)
+-    {
+-        await cache.RemoveAsync($"portfolio:{portfolioId}:values");
+-    }
+ }
+\ No newline at end of file
+diff --git a/Services/PortfolioUpdateService.cs b/Services/PortfolioUpdateService.cs
+index d88290a..cc96f05 100644
+--- a/Services/PortfolioUpdateService.cs
++++ b/Services/PortfolioUpdateService.cs
+@@ -1,27 +1,13 @@
+-using Microsoft.Extensions.Options;
+ using MongoDB.Driver;
+-using PortfolioManager.Configuration;
+ using PortfolioManager.Models;
+ 
+ namespace PortfolioManager.Services;
+ 
+-public class PortfolioUpdateService
++public class PortfolioUpdateService(
++    MongoDbService mongoDbService,
++    ILogger<PortfolioUpdateService> logger)
+ {
+-    private readonly ILogger<PortfolioUpdateService> _logger;
+-    private readonly MongoDbService _mongoDbService;
+-    private readonly IOptions<PortfolioUpdateOptions> _options;
+-
+-    public PortfolioUpdateService(
+-        MongoDbService mongoDbService,
+-        ILogger<PortfolioUpdateService> logger,
+-        IOptions<PortfolioUpdateOptions> options)
+-    {
+-        _mongoDbService = mongoDbService;
+-        _logger = logger;
+-        _options = options;
+-    }
+-
+-    public async Task<List<string>> GetAffectedPortfolios(string stockId)
++    public async Task<List<string?>> GetAffectedPortfolios(string stockId)
+     {
+         try
+         {
+@@ -30,17 +16,17 @@ public class PortfolioUpdateService
+                 stock => stock.StockId == stockId
+             );
+ 
+-            var portfolios = await _mongoDbService.Portfolios
++            var portfolios = await mongoDbService.Portfolios
+                 .Find(filter)
+                 .Project(p => p.Id)
+                 .ToListAsync();
+ 
+-            _logger.LogInformation($"Found {portfolios.Count} portfolios containing stock {stockId}");
++            logger.LogInformation($"Found {portfolios.Count} portfolios containing stock {stockId}");
+             return portfolios;
+         }
+         catch (Exception ex)
+         {
+-            _logger.LogError(ex, $"Error getting affected portfolios for stock {stockId}");
++            logger.LogError(ex, $"Error getting affected portfolios for stock {stockId}");
+             throw;
+         }
+     }

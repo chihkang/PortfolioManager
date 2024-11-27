@@ -149,7 +149,7 @@ public class PortfolioController(MongoDbService mongoDbService, ILogger<Portfoli
                     .Find(s => s != null && stockIds.Contains(s.Id))
                     .ToListAsync();
 
-                var stockDetails = stocks.ToDictionary(s => s?.Id);
+                var stockDetails = stocks.ToDictionary(s => s?.Id!);
 
                 // 豐富回應資訊
                 var enrichedPortfolio = new EnrichedPortfolioResponse
@@ -161,7 +161,7 @@ public class PortfolioController(MongoDbService mongoDbService, ILogger<Portfoli
                     {
                         StockId = ps.StockId,
                         Quantity = ps.Quantity,
-                        StockDetails = stockDetails.GetValueOrDefault(ps.StockId)
+                        StockDetails = stockDetails.GetValueOrDefault(ps.StockId!)
                     }).ToList()
                 };
 
@@ -323,25 +323,4 @@ public class PortfolioController(MongoDbService mongoDbService, ILogger<Portfoli
             return StatusCode(500, "An error occurred while adding stock to portfolio");
         }
     }
-}
-
-public class EnrichedPortfolioResponse
-{
-    public required string Id { get; set; }
-    public DateTime LastUpdated { get; set; }
-    public required List<EnrichedPortfolioStock> Stocks { get; set; }
-    public required string UserId { get; set; }
-}
-
-public class EnrichedPortfolioStock
-{
-    public required string StockId { get; set; }
-    public decimal Quantity { get; set; }
-    public Stock? StockDetails { get; set; }
-}
-
-public class AddStockByIdDto
-{
-    public required string StockId { get; set; }
-    public decimal Quantity { get; set; }
 }

@@ -2,5 +2,5 @@ namespace PortfolioManager.Models;
 
 public class CreateUserDto
 {
-    public string Username { get; set; }
+    public string? Username { get; set; }
 }

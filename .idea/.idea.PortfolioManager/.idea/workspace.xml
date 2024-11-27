@@ -10,27 +10,38 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aab7e71f-2c37-4cbc-982f-c2f527840867" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/global.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.PortfolioManager/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PortfolioManager/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Configuration/PortfolioUpdateOptions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Configuration/PortfolioUpdateOptions.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controllers/ExchangeController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/ExchangeController.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Attribute/DtoAttribute.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Configuration/MongoDbSettings.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Jobs/ExchangeRateResponse.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Models/AddStockByIdDto.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Models/DatabaseStatusInfo.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Models/EnrichedPortfolioResponse.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Models/EnrichedPortfolioStock.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Models/Portfolio.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Models/PortfolioStock.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Models/Stock.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Models/StockListItemResponse.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Models/StockPriceInfo.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Models/UpdateStockPriceResponse.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controllers/ExchangeController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/ExchangeRateController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Controllers/PortfolioController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/PortfolioController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Controllers/PortfolioDailyValueController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/PortfolioDailyValueController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Controllers/StockController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/StockController.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Controllers/UserController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/UserController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Events/ExchangeRateUpdatedEvent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Events/ExchangeRateUpdatedEvent.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Events/StockPriceUpdatedEvent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Events/StockPriceUpdatedEvent.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Events/ExchangeRateUpdatedEvent.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Events/StockPriceUpdatedEvent.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Exception/ScraperException.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Exception/ScraperException.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Extensions/DistributedCacheExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Extensions/DistributedCacheExtensions.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Jobs/RecordDailyValueJob.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Jobs/RecordDailyValueJob.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Models/AddPortfolioStockDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/AddPortfolioStockDto.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Models/CreateUserDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/CreateUserDto.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Models/PortfolioMetrics.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/PortfolioMetrics.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/PortfolioDailyValue.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/PortfolioDailyValue.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/PortfolioDailyValueResponse.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/PortfolioDailyValueResponse.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/PortfolioMetrics.cs" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/Models/User.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/User.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PortfolioManager.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/PortfolioManager.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PortfolioManager.sln.DotSettings" beforeDir="false" afterPath="$PROJECT_DIR$/PortfolioManager.sln.DotSettings" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Services/MongoDbService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/MongoDbService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Services/PortfolioCacheService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/PortfolioCacheService.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Services/PortfolioDailyValueService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/PortfolioDailyValueService.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Services/PortfolioUpdateService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/PortfolioUpdateService.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -45,6 +56,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/6d2342c247c64eb7a9b3702e481e4443f83e00/55/dd48a216/Exception.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/fb69109d67c049a0b5cb5b15b6653f9112c00/3d/0f9d6aba/IMediator.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/fd5bd808aa7343b9bc25e313b6b32996219600/5f/83ed38f8/ControllerBase.cs" root0="FORCE_HIGHLIGHTING" />
     <setting file="file:///usr/local/share/dotnet/sdk/8.0.403/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.TargetFrameworkInference.targets" root0="FORCE_HIGHLIGHTING" />
@@ -53,8 +65,9 @@
   <component name="KubernetesApiProvider">{
   &quot;isMigrated&quot;: true
 }</component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="true" />
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="Toolset" />
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
@@ -189,12 +202,14 @@
       <workItem from="1732257028422" duration="640000" />
       <workItem from="1732587779124" duration="8957000" />
       <workItem from="1732602828842" duration="6133000" />
+      <workItem from="1732689824883" duration="6670000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="true" />
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
