@@ -8,7 +8,6 @@ namespace PortfolioManager.Controllers;
 public class ExchangeRateController(HttpClient httpClient) : ControllerBase
 {
     /// <summary>
-    /// 
     /// </summary>
     /// <param name="currencyPair"></param>
     /// <returns></returns>
@@ -18,27 +17,24 @@ public class ExchangeRateController(HttpClient httpClient) : ControllerBase
     {
         try
         {
-            string url = $"https://www.google.com/finance/quote/{currencyPair}";
-                
+            var url = $"https://www.google.com/finance/quote/{currencyPair}";
+
             // Set headers
             var requestMessage = new HttpRequestMessage(HttpMethod.Get, url);
             requestMessage.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
 
-            HttpResponseMessage response = await httpClient.SendAsync(requestMessage);
+            var response = await httpClient.SendAsync(requestMessage);
             response.EnsureSuccessStatusCode();
 
-            string responseBody = await response.Content.ReadAsStringAsync();
+            var responseBody = await response.Content.ReadAsStringAsync();
 
             // Use Regex to find the exchange rate in the response
             var match = Regex.Match(responseBody, @"data-last-price=""([^""]+)""");
 
-            if (!match.Success)
-            {
-                throw new ScraperException($"Cannot find exchange rate information for {currencyPair}");
-            }
+            if (!match.Success) throw new ScraperException($"Cannot find exchange rate information for {currencyPair}");
 
             // Parse and round the exchange rate
-            double exchangeRate = Math.Round(double.Parse(match.Groups[1].Value), 2);
+            var exchangeRate = Math.Round(double.Parse(match.Groups[1].Value), 2);
 
             return Ok(new { CurrencyPair = currencyPair, ExchangeRate = exchangeRate });
         }

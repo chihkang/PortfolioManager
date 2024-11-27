@@ -10,11 +10,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="aab7e71f-2c37-4cbc-982f-c2f527840867" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.dockerignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/global.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.PortfolioManager/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.PortfolioManager/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Configuration/PortfolioUpdateOptions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Configuration/PortfolioUpdateOptions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controllers/ExchangeController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/ExchangeController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controllers/PortfolioController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/PortfolioController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controllers/PortfolioDailyValueController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/PortfolioDailyValueController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controllers/StockController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/StockController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Controllers/UserController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Controllers/UserController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Events/ExchangeRateUpdatedEvent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Events/ExchangeRateUpdatedEvent.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Events/StockPriceUpdatedEvent.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Events/StockPriceUpdatedEvent.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Extensions/DistributedCacheExtensions.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Extensions/DistributedCacheExtensions.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Jobs/RecordDailyValueJob.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Jobs/RecordDailyValueJob.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/AddPortfolioStockDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/AddPortfolioStockDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/CreateUserDto.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/CreateUserDto.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/PortfolioMetrics.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/PortfolioMetrics.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Models/User.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Models/User.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/PortfolioManager.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/PortfolioManager.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PortfolioManager.sln.DotSettings" beforeDir="false" afterPath="$PROJECT_DIR$/PortfolioManager.sln.DotSettings" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/MongoDbService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/MongoDbService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/PortfolioCacheService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/PortfolioCacheService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/PortfolioDailyValueService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/PortfolioDailyValueService.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Services/PortfolioUpdateService.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Services/PortfolioUpdateService.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,13 +47,14 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/fb69109d67c049a0b5cb5b15b6653f9112c00/3d/0f9d6aba/IMediator.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/fd5bd808aa7343b9bc25e313b6b32996219600/5f/83ed38f8/ControllerBase.cs" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file:///usr/local/share/dotnet/sdk/8.0.403/Sdks/Microsoft.NET.Sdk/targets/Microsoft.NET.TargetFrameworkInference.targets" root0="FORCE_HIGHLIGHTING" />
   </component>
-  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
-  <component name="KubernetesApiProvider"><![CDATA[{
-  "isMigrated": true
-}]]></component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
   <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
+    <option name="selectedTabId" value="Toolset" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 2
@@ -62,7 +80,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.sourceCode.C#&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;SolutionBuilderGeneralOptionsPage&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
   &quot;keyToStringList&quot;: {
@@ -139,7 +157,10 @@
       <method v="2" />
     </configuration>
     <configuration default="true" type="docker-deploy" factoryName="dockerfile" temporary="true">
-      <deployment type="dockerfile" />
+      <deployment type="dockerfile">
+        <settings />
+      </deployment>
+      <EXTENSION ID="com.jetbrains.rider.docker.debug" isFastModeEnabled="true" isSslEnabled="false" />
       <method v="2" />
     </configuration>
   </component>

@@ -14,7 +14,8 @@ public static class DistributedCacheExtensions
         return JsonSerializer.Deserialize<T>(json);
     }
 
-    public static async Task SetAsync<T>(this IDistributedCache cache, string key, T value, DistributedCacheEntryOptions options)
+    public static async Task SetAsync<T>(this IDistributedCache cache, string key, T value,
+        DistributedCacheEntryOptions options)
     {
         var json = JsonSerializer.Serialize(value);
         var data = Encoding.UTF8.GetBytes(json);

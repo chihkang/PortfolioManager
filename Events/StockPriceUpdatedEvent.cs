@@ -1,6 +1,8 @@
-namespace PortfolioManager.Events;
 using MediatR;
-public class StockPriceUpdatedEvent:INotification
+
+namespace PortfolioManager.Events;
+
+public class StockPriceUpdatedEvent : INotification
 {
     public string StockId { get; set; }
     public decimal OldPrice { get; set; }

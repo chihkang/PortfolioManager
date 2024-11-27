@@ -39,6 +39,7 @@ public class RecordDailyValueJob(
         }
     }
 }
+
 public abstract class ExchangeRateResponse
 {
     public double ExchangeRate { get; set; }

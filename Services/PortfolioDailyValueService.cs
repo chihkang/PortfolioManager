@@ -16,13 +16,12 @@ public class PortfolioDailyValueService(
                 .ToListAsync();
 
             foreach (var portfolio in portfolios)
-            {
                 try
                 {
                     // 計算總資產價值
                     decimal totalValueTwd = 0;
-                    
-                    if (portfolio.Stocks.Any() == true)
+
+                    if (portfolio.Stocks.Any())
                     {
                         var stockIds = portfolio.Stocks.Select(s => s.StockId).ToList();
                         var stocks = await mongoDbService.Stocks
@@ -37,7 +36,7 @@ public class PortfolioDailyValueService(
                                 var value = stockDetails.Currency == "USD"
                                     ? portfolioStock.Quantity * stockDetails.Price * exchangeRate
                                     : portfolioStock.Quantity * stockDetails.Price;
-                                
+
                                 totalValueTwd += value;
                             }
                         }
@@ -57,7 +56,6 @@ public class PortfolioDailyValueService(
                 {
                     logger.LogError(ex, $"Error recording daily value for portfolio {portfolio.Id}");
                 }
-            }
         }
         catch (Exception ex)
         {

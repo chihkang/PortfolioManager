@@ -1,4 +1,5 @@
 namespace PortfolioManager.Models;
+
 public class PortfolioMetrics
 {
     public string PortfolioId { get; set; }
@@ -19,4 +20,3 @@ public class StockMetric
     public decimal PercentageOfPortfolio { get; set; }
     public string Currency { get; set; }
 }
-

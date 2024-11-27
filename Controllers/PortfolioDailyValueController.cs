@@ -49,9 +49,7 @@ public class PortfolioDailyValueController(
                 .ToListAsync();
 
             if (!values.Any())
-            {
                 return NotFound($"No data found for portfolio {portfolioId} in the specified date range");
-            }
 
             // 計算統計數據
             var summary = new ValueSummary
@@ -119,10 +117,7 @@ public class PortfolioDailyValueController(
                 .Sort(sortByDate)
                 .ToListAsync();
 
-            if (!values.Any())
-            {
-                return NotFound($"No data found for portfolio {portfolioId}");
-            }
+            if (!values.Any()) return NotFound($"No data found for portfolio {portfolioId}");
 
             // 計算摘要
             var summary = new ValueSummary
@@ -137,12 +132,10 @@ public class PortfolioDailyValueController(
 
             // 計算漲跌幅
             if (summary.StartValue != 0)
-            {
                 summary.ChangePercentage = Math.Round(
                     (summary.EndValue - summary.StartValue) / summary.StartValue * 100,
                     2
                 );
-            }
 
             logger.LogInformation($"Successfully fetched summary for portfolio {portfolioId}: " +
                                   $"Start: {summary.StartValue:N0}, " +

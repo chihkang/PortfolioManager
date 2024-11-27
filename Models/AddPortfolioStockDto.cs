@@ -1,8 +1,7 @@
-namespace PortfolioManager.Models
+namespace PortfolioManager.Models;
+
+public class AddPortfolioStockDto
 {
-    public class AddPortfolioStockDto
-    {
-        public string StockNameOrAlias { get; set; }
-        public decimal Quantity { get; set; }
-    }
+    public string StockNameOrAlias { get; set; }
+    public decimal Quantity { get; set; }
 }

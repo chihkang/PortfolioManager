@@ -14,13 +14,10 @@ public class PortfolioCacheService(
     public async Task<Portfolio> GetPortfolioWithCurrentValues(string portfolioId)
     {
         var cacheKey = $"portfolio:{portfolioId}:values";
-        
+
         // 嘗試從快取獲取
         var cachedPortfolio = await cache.GetAsync<Portfolio>(cacheKey);
-        if (cachedPortfolio != null)
-        {
-            return cachedPortfolio;
-        }
+        if (cachedPortfolio != null) return cachedPortfolio;
 
         // 如果快取中沒有，重新計算
         var portfolio = await mongoDbService.Portfolios
@@ -34,7 +31,7 @@ public class PortfolioCacheService(
             {
                 AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5)
             };
-            
+
             await cache.SetAsync(cacheKey, portfolio, options);
         }
 
@@ -45,5 +42,4 @@ public class PortfolioCacheService(
     {
         await cache.RemoveAsync($"portfolio:{portfolioId}:values");
     }
-    
 }
