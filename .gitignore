@@ -6,3 +6,5 @@ riderModule.iml
 appsettings.json
 !appsettings.template.json
 !appsettings.Development.json
+.idea
+.idea/.idea.PortfolioManager/.idea/workspace.xml

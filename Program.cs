@@ -56,7 +56,6 @@ builder.Services.AddQuartz(q =>
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 builder.Services.AddScoped<PortfolioDailyValueService>();
 builder.Services.AddSingleton<MongoDbService>();
-builder.Services.AddScoped<PortfolioUpdateService>();
 builder.Services.AddScoped<PortfolioCacheService>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddMemoryCache();
