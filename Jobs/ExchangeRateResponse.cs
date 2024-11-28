@@ -1,6 +1,8 @@
 namespace PortfolioManager.Jobs;
 
-public abstract class ExchangeRateResponse
+public record ExchangeRateResponse
 {
-    public double ExchangeRate { get; set; }
+    public string? CurrencyPair { get; init; }
+    public decimal ExchangeRate { get; init; }
+    public DateTime Timestamp { get; init; } = DateTime.UtcNow;
 }

@@ -8,27 +8,15 @@ namespace PortfolioManager.Jobs;
 public class RecordDailyValueJob(
     PortfolioDailyValueService portfolioDailyValueService,
     ILogger<RecordDailyValueJob> logger,
-    ExchangeRateController exchangeRateController)
+    IExchangeRateService exchangeRateService)
     : IJob
 {
     public async Task Execute(IJobExecutionContext context)
     {
         try
         {
-            // 取得匯率
-            var rateResult = await exchangeRateController.GetExchangeRate();
-            decimal exchangeRate;
-
-            if (rateResult is OkObjectResult { Value: ExchangeRateResponse rateResponse })
-            {
-                exchangeRate = Convert.ToDecimal(rateResponse.ExchangeRate);
-                logger.LogInformation($"Successfully fetched exchange rate: {exchangeRate}");
-            }
-            else
-            {
-                logger.LogWarning("Exchange rate not available, using default rate 30.5");
-                exchangeRate = 30.5m;
-            }
+            var exchangeRate = await exchangeRateService.GetExchangeRateAsync();
+            logger.LogInformation("Successfully fetched exchange rate: {Rate}", exchangeRate);
 
             await portfolioDailyValueService.RecordDailyValuesAsync(exchangeRate);
             logger.LogInformation("Successfully recorded daily values");

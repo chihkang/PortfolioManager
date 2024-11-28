@@ -1,3 +1,4 @@
+using PortfolioManager;
 using PortfolioManager.Configuration;
 using PortfolioManager.Controllers;
 using PortfolioManager.Jobs;
@@ -27,7 +28,7 @@ builder.Services.Configure<PortfolioUpdateOptions>(
 
 // 添加 MediatR
 builder.Services.AddMediatR(cfg => { cfg.RegisterServicesFromAssembly(typeof(Program).Assembly); });
-builder.Services.AddHttpClient<ExchangeRateController>();
+builder.Services.AddHttpClient<IExchangeRateService, ExchangeRateService>();
 // 註冊服務
 // 添加 Quartz
 builder.Services.AddQuartz(q =>
