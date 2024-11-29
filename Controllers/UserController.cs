@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using PortfolioManager.Models;
+using PortfolioManager.Models.Entities;
 using PortfolioManager.Services;
 
 namespace PortfolioManager.Controllers;

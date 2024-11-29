@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using MongoDB.Driver;
 using PortfolioManager.Models;
+using PortfolioManager.Models.Entities;
 using PortfolioManager.Services;
 
 namespace PortfolioManager.Controllers;

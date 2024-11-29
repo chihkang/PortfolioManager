@@ -1,7 +1,6 @@
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace PortfolioManager.Models;
+namespace PortfolioManager.Models.Entities;
 
 public class User
 {

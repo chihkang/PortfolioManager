@@ -1,7 +1,6 @@
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace PortfolioManager.Models;
+namespace PortfolioManager.Models.Entities;
 
 public class PortfolioDailyValue
 {
@@ -15,5 +14,6 @@ public class PortfolioDailyValue
     public DateTime Date { get; set; }
 
     [BsonRepresentation(BsonType.Decimal128)]
-    public decimal TotalValueTWD { get; set; }
+    [BsonElement("TotalValueTWD")]
+    public decimal TotalValueTwd { get; set; }
 }

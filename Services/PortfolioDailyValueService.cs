@@ -1,5 +1,6 @@
 using MongoDB.Driver;
 using PortfolioManager.Models;
+using PortfolioManager.Models.Entities;
 
 namespace PortfolioManager.Services;
 
@@ -46,7 +47,7 @@ public class PortfolioDailyValueService(
                     {
                         PortfolioId = portfolio.Id,
                         Date = DateTime.UtcNow.Date,
-                        TotalValueTWD = totalValueTwd
+                        TotalValueTwd = totalValueTwd
                     };
 
                     await mongoDbService.PortfolioDailyValues.InsertOneAsync(dailyValue);

@@ -1,3 +1,5 @@
+using PortfolioManager.Models.Entities;
+
 namespace PortfolioManager.Models;
 
 public class EnrichedPortfolioStock

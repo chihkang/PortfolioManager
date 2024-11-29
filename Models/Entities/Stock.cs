@@ -1,13 +1,12 @@
-using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace PortfolioManager.Models;
+namespace PortfolioManager.Models.Entities;
 
 public class Stock
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
-    public string? Id { get; set; }
+    public required string Id { get; set; }
 
     [BsonElement("name")] public string? Name { get; set; }
 

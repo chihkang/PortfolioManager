@@ -2,6 +2,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using MongoDB.Driver;
 using PortfolioManager.Extensions;
 using PortfolioManager.Models;
+using PortfolioManager.Models.Entities;
 
 namespace PortfolioManager.Services;
 

@@ -3,6 +3,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using PortfolioManager.Configuration;
 using PortfolioManager.Models;
+using PortfolioManager.Models.Entities;
 
 namespace PortfolioManager.Services;
 
