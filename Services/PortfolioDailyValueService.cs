@@ -1,7 +1,3 @@
-using MongoDB.Driver;
-using PortfolioManager.Models;
-using PortfolioManager.Models.Entities;
-
 namespace PortfolioManager.Services;
 
 public class PortfolioDailyValueService(

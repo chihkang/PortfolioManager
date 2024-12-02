@@ -6,25 +6,17 @@ namespace PortfolioManager.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ExchangeRateController : ControllerBase
+public class ExchangeRateController(
+    IExchangeRateService exchangeRateService,
+    ILogger<ExchangeRateController> logger)
+    : ControllerBase
 {
-    private readonly IExchangeRateService _exchangeRateService;
-    private readonly ILogger<ExchangeRateController> _logger;
-
-    public ExchangeRateController(
-        IExchangeRateService exchangeRateService,
-        ILogger<ExchangeRateController> logger)
-    {
-        _exchangeRateService = exchangeRateService;
-        _logger = logger;
-    }
-
     [HttpGet("{currencyPair}")]
     public async Task<IActionResult> GetExchangeRate(string currencyPair = "USD-TWD")
     {
         try
         {
-            var exchangeRate = await _exchangeRateService.GetExchangeRateAsync();
+            var exchangeRate = await exchangeRateService.GetExchangeRateAsync();
             
             return Ok(new ExchangeRateResponse 
             { 
@@ -34,7 +26,7 @@ public class ExchangeRateController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error fetching exchange rate for {Pair}", currencyPair);
+            logger.LogError(ex, "Error fetching exchange rate for {Pair}", currencyPair);
             return StatusCode(500, new { Error = "無法取得匯率資訊" });
         }
     }

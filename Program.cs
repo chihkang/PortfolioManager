@@ -54,7 +54,12 @@ builder.Services.AddQuartz(q =>
     );
 });
 
-builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+// 添加 Quartz 托管服務
+builder.Services.AddQuartzHostedService(options =>
+{
+    options.WaitForJobsToComplete = true;
+    options.AwaitApplicationStarted = true;
+});
 builder.Services.AddScoped<PortfolioDailyValueService>();
 builder.Services.AddSingleton<MongoDbService>();
 builder.Services.AddScoped<PortfolioCacheService>();

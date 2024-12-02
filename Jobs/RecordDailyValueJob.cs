@@ -1,8 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using PortfolioManager.Controllers;
-using PortfolioManager.Services;
-using Quartz;
-
 namespace PortfolioManager.Jobs;
 
 public class RecordDailyValueJob(
@@ -13,17 +8,80 @@ public class RecordDailyValueJob(
 {
     public async Task Execute(IJobExecutionContext context)
     {
+        var jobStartTime = DateTime.UtcNow;
+        var stopwatch = Stopwatch.StartNew();
+
         try
         {
-            var exchangeRate = await exchangeRateService.GetExchangeRateAsync();
-            logger.LogInformation("Successfully fetched exchange rate: {Rate}", exchangeRate);
+            logger.LogInformation("""
+                Job execution started:
+                Trigger: {TriggerName}
+                Scheduled Fire Time: {ScheduledTime}
+                Previous Fire Time: {PreviousFireTime}
+                Next Fire Time: {NextFireTime}
+                """,
+                context.Trigger.Key.Name,
+                context.ScheduledFireTimeUtc?.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss"),
+                context.PreviousFireTimeUtc?.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss"),
+                context.NextFireTimeUtc?.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss"));
 
+            // 獲取匯率
+            logger.LogInformation("Fetching exchange rate...");
+            var exchangeRateStopwatch = Stopwatch.StartNew();
+            var exchangeRate = await exchangeRateService.GetExchangeRateAsync();
+            exchangeRateStopwatch.Stop();
+
+            logger.LogInformation("""
+                Exchange rate fetched successfully:
+                Rate: {Rate}
+                Duration: {Duration}ms
+                """,
+                exchangeRate,
+                exchangeRateStopwatch.ElapsedMilliseconds);
+
+            // 記錄每日價值
+            logger.LogInformation("Starting daily values recording...");
+            var recordingStopwatch = Stopwatch.StartNew();
             await portfolioDailyValueService.RecordDailyValuesAsync(exchangeRate);
-            logger.LogInformation("Successfully recorded daily values");
+            recordingStopwatch.Stop();
+
+            // 記錄成功完成
+            stopwatch.Stop();
+            logger.LogInformation("""
+                Job completed successfully:
+                Total Duration: {TotalDuration}ms
+                Exchange Rate Fetch Duration: {ExchangeRateDuration}ms
+                Recording Duration: {RecordingDuration}ms
+                Job Start Time: {StartTime}
+                Job End Time: {EndTime}
+                """,
+                stopwatch.ElapsedMilliseconds,
+                exchangeRateStopwatch.ElapsedMilliseconds,
+                recordingStopwatch.ElapsedMilliseconds,
+                jobStartTime.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss"),
+                DateTime.UtcNow.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss"));
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error executing daily value recording job");
+            stopwatch.Stop();
+            logger.LogError(ex, """
+                Job execution failed:
+                Duration: {Duration}ms
+                Error Type: {ErrorType}
+                Error Message: {ErrorMessage}
+                Stack Trace: {StackTrace}
+                Job Start Time: {StartTime}
+                Job End Time: {EndTime}
+                """,
+                stopwatch.ElapsedMilliseconds,
+                ex.GetType().Name,
+                ex.Message,
+                ex.StackTrace,
+                jobStartTime.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss"),
+                DateTime.UtcNow.ToLocalTime().ToString("yyyy-MM-dd HH:mm:ss"));
+
+            // 重新拋出異常，讓 Quartz 知道作業失敗
+            throw;
         }
     }
 }

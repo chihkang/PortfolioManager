@@ -1,13 +1,9 @@
 namespace PortfolioManager.Models.DTO.PortfolioDailyValue;
 
-public sealed record PortfolioDailyValueResponse
-{
-    public required string PortfolioId { get; init; }
-
-    // 注意這裡不需要再次複製集合，因為在擴展方法中已經做了
-    public required IReadOnlyList<DailyValueData> Values { get; init; }
-    public required ValueSummary Summary { get; init; }
-}
+public sealed record PortfolioDailyValueResponse(
+    string PortfolioId,
+    IReadOnlyList<DailyValueData> Values,
+    ValueSummary Summary);
 
 public sealed record DailyValueData
 {
@@ -79,7 +75,7 @@ public sealed record ValueSummary
 public static class PortfolioDailyValueExtensions
 {
     public static PortfolioDailyValueResponse ToResponse(
-        this IEnumerable<DailyValueData> values,
+        this IReadOnlyList<DailyValueData> values,
         string portfolioId)
     {
         ArgumentNullException.ThrowIfNull(values);
@@ -87,11 +83,6 @@ public static class PortfolioDailyValueExtensions
 
         var valuesList = values.ToList().AsReadOnly();
 
-        return new PortfolioDailyValueResponse
-        {
-            PortfolioId = portfolioId,
-            Values = valuesList,
-            Summary = ValueSummary.Calculate(valuesList)
-        };
+        return new PortfolioDailyValueResponse(portfolioId, values, ValueSummary.Calculate(valuesList));
     }
 }
