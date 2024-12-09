@@ -24,4 +24,8 @@
         <Folder Include="Handlers\"/>
     </ItemGroup>
 
+    <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+      <Exec Command="open &quot;raycast://confetti&quot;" />
+    </Target>
+
 </Project>

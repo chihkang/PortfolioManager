@@ -8,3 +8,4 @@ appsettings.json
 !appsettings.Development.json
 .idea
 .idea/.idea.PortfolioManager/.idea/workspace.xml
+.DS_Store
