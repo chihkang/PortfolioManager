@@ -1,23 +1,30 @@
-﻿FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
+# Copy the csproj file (ensure this is the correct path)
 COPY ["PortfolioManager.csproj", "./"]
 
 # 強制安裝特定版本的套件
 RUN dotnet add package Microsoft.Extensions.Diagnostics --version 9.0.0
 RUN dotnet add package Microsoft.Extensions.Diagnostics.Abstractions --version 9.0.0
 
+# Run restore (which now picks up the runtime identifier if it's in the csproj)
 RUN dotnet restore
+
+# Copy the rest of the files
 COPY . .
 
 # 優化發布設定
-RUN dotnet publish -c Release -o /app/publish \
-    --no-restore \
+# Note: If your build context includes a solution (PortfolioManager.sln) and you are targeting a single project,
+# you might specify the .csproj file here to avoid solution-level issues.
+RUN dotnet publish PortfolioManager.csproj -c Release -o /app/publish \
     /p:PublishTrimmed=true \
     /p:PublishSingleFile=true \
     /p:DebugType=None \
-    /p:DebugSymbols=false
+    /p:DebugSymbols=false \
+    /p:TargetFramework=net9.0 \
+    /p:RuntimeIdentifier=linux-musl-x64
 
-# 使用Alpine基底映像以減少大小
+# 使用 Alpine 基底映像以減少大小
 FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine
 WORKDIR /app
 COPY --from=build /app/publish .
@@ -27,18 +34,12 @@ ARG PORT=80
 ENV ASPNETCORE_URLS=http://+:${PORT} \
     DOTNET_EnableDiagnostics=0 \
     ASPNETCORE_ENVIRONMENT=Production \
-    # 啟用 Server GC
     DOTNET_gcServer=1 \
-    # 設定 GC 高效能模式
     DOTNET_GCHighMemPercent=90 \
-    # 限制記憶體使用
     DOTNET_MaxRAMPercentage=80 \
-    # 禁用遙測
-    DOTNET_EnableDiagnostics=0 \
     DOTNET_DiagnosticPorts="" \
     DOTNET_DiagnosticPortOptions="" \
-    # 優化字串池
     DOTNET_StringLiteralInterningPolicy=High
 
-# 修正ENTRYPOINT格式並加入GC優化參數
+# 修正 ENTRYPOINT 格式並加入 GC 優化參數
 ENTRYPOINT ["dotnet", "PortfolioManager.dll", "--no-metrics", "--gc-concurrent"]
