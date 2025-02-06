@@ -22,8 +22,8 @@ WORKDIR /app
 # 安裝 tzdata 套件以支援時區設定，並設定 Asia/Taipei 時區
 RUN apk add --no-cache tzdata && \
     cp /usr/share/zoneinfo/Asia/Taipei /etc/localtime && \
-    echo "Asia/Taipei" > /etc/timezone && \
-    apk del tzdata
+    echo "Asia/Taipei" > /etc/timezone
+
 
 # 複製發佈結果
 COPY --from=build /app/publish .
