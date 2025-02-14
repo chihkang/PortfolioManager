@@ -7,7 +7,6 @@
     <LangVersion>preview</LangVersion>
     <EnablePreviewFeatures>true</EnablePreviewFeatures>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <RuntimeIdentifiers>linux-musl-x64</RuntimeIdentifiers>
   </PropertyGroup>
 
   <ItemGroup>
