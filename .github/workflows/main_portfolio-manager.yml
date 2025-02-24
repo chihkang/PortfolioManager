@@ -47,7 +47,7 @@ jobs:
 
       # 使用新的 AZURE_CREDENTIALS 進行登入
       - name: Azure Login
-        uses: azure/login@v1
+        uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       
