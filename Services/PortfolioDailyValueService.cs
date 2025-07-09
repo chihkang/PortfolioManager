@@ -10,7 +10,12 @@ public class PortfolioDailyValueService(
         {
             var taipeiTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Taipei");
             var taipeiTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, taipeiTimeZone);
-            var localMidnight = new DateTime(taipeiTime.Year, taipeiTime.Month, taipeiTime.Day, 0, 0, 0);
+        
+            // 建立有時區資訊的台北時間午夜
+            var localMidnight = new DateTime(taipeiTime.Year, taipeiTime.Month, taipeiTime.Day, 0, 0, 0, DateTimeKind.Unspecified);
+        
+            // 將台北時間午夜轉換為 UTC 時間存儲
+            var utcMidnight = TimeZoneInfo.ConvertTimeToUtc(localMidnight, taipeiTimeZone);
 
             var portfolios = await mongoDbService.Portfolios
                 .Find(_ => true)
@@ -20,26 +25,26 @@ public class PortfolioDailyValueService(
             {
                 try
                 {
-                    // 只計算一次總資產價值
                     var totalValueTwd = await CalculatePortfolioValueAsync(portfolio, exchangeRate);
 
                     var dailyValue = new PortfolioDailyValue
                     {
                         PortfolioId = portfolio.Id,
-                        Date = localMidnight,
+                        Date = utcMidnight, // 使用 UTC 時間
                         TotalValueTwd = totalValueTwd
                     };
 
                     await mongoDbService.PortfolioDailyValues.InsertOneAsync(dailyValue);
+                
                     logger.LogInformation("""
                                           Recorded daily value for portfolio {PortfolioId}:
-                                          Local Date: {LocalDate:yyyy-MM-dd}
-                                          UTC Date: {UtcDate:yyyy-MM-dd HH:mm:ss}
+                                          Taipei Date: {TaipeiDate:yyyy-MM-dd}
+                                          UTC Storage Time: {UtcTime:yyyy-MM-dd HH:mm:ss}
                                           Value: {Value:N0} TWD
                                           """,
                         portfolio.Id,
                         taipeiTime.Date,
-                        localMidnight,
+                        utcMidnight,
                         totalValueTwd);
                 }
                 catch (Exception ex)
@@ -54,6 +59,7 @@ public class PortfolioDailyValueService(
             throw;
         }
     }
+
 
 
     private async Task<decimal> CalculatePortfolioValueAsync(Portfolio portfolio, decimal exchangeRate)

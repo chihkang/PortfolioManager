@@ -4,3 +4,17 @@ GET {{PortfolioManager_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+### GET request with a header
+GET https://portfolio-manager-hcgdctbybhesctgq.eastus2-01.azurewebsites.net/api/Stock
+Accept: application/json
+
+### GET request with portfolio with name (Azure)
+GET https://portfolio-manager-hcgdctbybhesctgq.eastus2-01.azurewebsites.net/api/Portfolio/user/chihkang
+Accept: application/json
+#portfolioid=>67283d5d447a55a757f87db7
+
+### Get PortfolioDailyValue history 
+GET https://portfoliomanager-production.up.railway.app/api/PortfolioDailyValue/67283d5d447a55a757f87db7/history?range=1
+accept: application/json
+###
+

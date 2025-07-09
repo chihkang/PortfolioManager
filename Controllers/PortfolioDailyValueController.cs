@@ -12,7 +12,9 @@ public class PortfolioDailyValueController(
     /// </summary>
     private static DateTimeRange GetDateRange(TimeRange range)
     {
-        var endDate = DateTime.UtcNow.Date;
+        // 將結束日期設為明天的午夜，確保包含今天所有時間的資料
+        var endDate = DateTime.UtcNow.Date.AddDays(1);
+    
         var startDate = range switch
         {
             TimeRange.OneMonth => endDate.AddMonths(-1),
@@ -21,8 +23,10 @@ public class PortfolioDailyValueController(
             TimeRange.OneYear => endDate.AddYears(-1),
             _ => endDate.AddMonths(-1)
         };
+    
         return new DateTimeRange(startDate, endDate);
     }
+
 
     /// <summary>
     /// 建立MongoDB過濾器的輔助方法
@@ -34,7 +38,7 @@ public class PortfolioDailyValueController(
         return Builders<PortfolioDailyValue>.Filter.And(
             Builders<PortfolioDailyValue>.Filter.Eq(x => x.PortfolioId, portfolioId),
             Builders<PortfolioDailyValue>.Filter.Gte(x => x.Date, dateRange.StartDate),
-            Builders<PortfolioDailyValue>.Filter.Lte(x => x.Date, dateRange.EndDate)
+            Builders<PortfolioDailyValue>.Filter.Lt(x => x.Date, dateRange.EndDate)
         );
     }
 
