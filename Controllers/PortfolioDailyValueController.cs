@@ -12,8 +12,8 @@ public class PortfolioDailyValueController(
     /// </summary>
     private static DateTimeRange GetDateRange(TimeRange range)
     {
-        // 將結束日期設為明天的午夜，確保包含今天所有時間的資料
-        var endDate = DateTime.UtcNow.Date.AddDays(1);
+        // 現在資料以 UTC 日期存儲，所以直接使用 UTC 計算
+        var endDate = DateTime.UtcNow.Date.AddDays(1); // 明天的 UTC 午夜
     
         var startDate = range switch
         {
@@ -26,6 +26,7 @@ public class PortfolioDailyValueController(
     
         return new DateTimeRange(startDate, endDate);
     }
+
 
 
     /// <summary>

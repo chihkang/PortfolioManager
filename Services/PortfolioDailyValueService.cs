@@ -11,11 +11,15 @@ public class PortfolioDailyValueService(
             var taipeiTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Asia/Taipei");
             var taipeiTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, taipeiTimeZone);
         
-            // 建立有時區資訊的台北時間午夜
-            var localMidnight = new DateTime(taipeiTime.Year, taipeiTime.Month, taipeiTime.Day, 0, 0, 0, DateTimeKind.Unspecified);
-        
-            // 將台北時間午夜轉換為 UTC 時間存儲
-            var utcMidnight = TimeZoneInfo.ConvertTimeToUtc(localMidnight, taipeiTimeZone);
+            // 重要：使用台北時間的日期，但存儲為 UTC 的同一天午夜
+            // 這樣前端轉換後日期才會正確
+            var dateForStorage = new DateTime(
+                taipeiTime.Year, 
+                taipeiTime.Month, 
+                taipeiTime.Day, 
+                0, 0, 0, 
+                DateTimeKind.Utc
+            );
 
             var portfolios = await mongoDbService.Portfolios
                 .Find(_ => true)
@@ -30,7 +34,7 @@ public class PortfolioDailyValueService(
                     var dailyValue = new PortfolioDailyValue
                     {
                         PortfolioId = portfolio.Id,
-                        Date = utcMidnight, // 使用 UTC 時間
+                        Date = dateForStorage, // 存儲為 2025-07-09T00:00:00.000Z
                         TotalValueTwd = totalValueTwd
                     };
 
@@ -44,7 +48,7 @@ public class PortfolioDailyValueService(
                                           """,
                         portfolio.Id,
                         taipeiTime.Date,
-                        utcMidnight,
+                        dateForStorage,
                         totalValueTwd);
                 }
                 catch (Exception ex)
@@ -59,6 +63,7 @@ public class PortfolioDailyValueService(
             throw;
         }
     }
+
 
 
 
