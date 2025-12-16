@@ -4,24 +4,24 @@ using PortfolioManager.Controllers;
 using PortfolioManager.Jobs;
 using PortfolioManager.Services;
 using Quartz;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
-// 取得 Railway 的 PORT 環境變數
-var port = Environment.GetEnvironmentVariable("PORT") ?? "3000";
-
-// 配置應用程式使用的 URL
-builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
 // 配置 MongoDB 設定
-builder.Services.Configure<MongoDbSettings>(options =>
-{
-    // 優先使用環境變數，如果沒有則使用 appsettings.json
-    options.ConnectionString = Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING")
-                               ?? builder.Configuration.GetSection("MongoDbSettings:ConnectionString").Value;
+builder.Services
+    .AddOptions<MongoDbSettings>()
+    .Bind(builder.Configuration.GetSection("MongoDbSettings"))
+    .PostConfigure(options =>
+    {
+        options.ConnectionString ??=
+            Environment.GetEnvironmentVariable("MONGODB_CONNECTION_STRING")
+            ?? Environment.GetEnvironmentVariable("MongoSettings__ConnectionString");
 
-    options.DatabaseName = Environment.GetEnvironmentVariable("MONGODB_DATABASE")
-                           ?? builder.Configuration.GetSection("MongoDbSettings:DatabaseName").Value;
-});
+        options.DatabaseName ??=
+            Environment.GetEnvironmentVariable("MONGODB_DATABASE")
+            ?? Environment.GetEnvironmentVariable("MongoSettings__DatabaseName");
+    });
 
 builder.Services.Configure<PortfolioUpdateOptions>(
     builder.Configuration.GetSection("PortfolioUpdate"));
@@ -70,6 +70,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// Behind reverse proxies (Zeabur), ensure scheme/host are forwarded correctly
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost
+});
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())

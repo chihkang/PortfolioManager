@@ -31,9 +31,7 @@ COPY --from=build /app/publish .
 # 移除 global.json（如果有被複製進來）
 RUN if [ -f global.json ]; then rm global.json; fi
 
-ARG PORT=80
-ENV ASPNETCORE_URLS=http://+:${PORT} \
-    DOTNET_EnableDiagnostics=0 \
+ENV DOTNET_EnableDiagnostics=0 \
     ASPNETCORE_ENVIRONMENT=Production \
     DOTNET_gcServer=1 \
     DOTNET_GCHighMemPercent=90 \
