@@ -8,6 +8,22 @@ using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Behind reverse proxies (Zeabur), trust X-Forwarded-* so scheme/host are correct.
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor |
+        ForwardedHeaders.XForwardedProto |
+        ForwardedHeaders.XForwardedHost;
+
+    // Zeabur's proxy IPs are not known ahead of time.
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
+// Avoid noisy warning when HTTPS is terminated at the proxy.
+builder.Services.AddHttpsRedirection(options => { options.HttpsPort = 443; });
+
 // 配置 MongoDB 設定
 builder.Services
     .AddOptions<MongoDbSettings>()
@@ -71,11 +87,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Behind reverse proxies (Zeabur), ensure scheme/host are forwarded correctly
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost
-});
+app.UseForwardedHeaders();
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
