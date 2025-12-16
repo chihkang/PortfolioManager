@@ -1,20 +1,119 @@
-@PortfolioManager_HostAddress = http://localhost:5268
+### PortfolioManager API samples
+###
+### How to use
+### - Change `@baseUrl` to your target (local / Zeabur)
+### - Run requests from VS Code REST Client / JetBrains HTTP Client
 
-GET {{PortfolioManager_HostAddress}}/weatherforecast/
+@localBaseUrl = http://localhost:3000
+@remoteBaseUrl = https://<your-public-domain>
+
+### Pick one
+@baseUrl = {{localBaseUrl}}
+# @baseUrl = {{remoteBaseUrl}}
+
+@username = demo_user
+@userId = {{userId}}
+@portfolioId = {{portfolioId}}
+@stockId = {{stockId}}
+@stockName = 2330:TPE
+
+###
+### Swagger (quick health check)
+GET {{baseUrl}}/swagger/index.html
+
+###
+### Users
+
+### Get all users
+GET {{baseUrl}}/api/User
+Accept: application/json
+
+### Create user (also creates portfolio)
+POST {{baseUrl}}/api/User
+Content-Type: application/json
+Accept: application/json
+
+{
+	"username": "{{username}}"
+}
+
+### Get user by id
+GET {{baseUrl}}/api/User/{{userId}}
+Accept: application/json
+
+### Delete user by id
+DELETE {{baseUrl}}/api/User/{{userId}}
+
+###
+### Portfolio
+
+### Get portfolio by id
+GET {{baseUrl}}/api/Portfolio/{{portfolioId}}
+Accept: application/json
+
+### Get portfolio by username (enriched)
+GET {{baseUrl}}/api/Portfolio/user/{{username}}
+Accept: application/json
+
+### Add stock to portfolio by name or alias
+POST {{baseUrl}}/api/Portfolio/{{portfolioId}}/stocks
+Content-Type: application/json
+Accept: application/json
+
+{
+	"stockNameOrAlias": "{{stockName}}",
+	"quantity": 1
+}
+
+### Add stock to portfolio by stockId
+POST {{baseUrl}}/api/Portfolio/{{portfolioId}}/stocks/byId
+Content-Type: application/json
+Accept: application/json
+
+{
+	"stockId": "{{stockId}}",
+	"quantity": 1
+}
+
+### Update stock quantity in portfolio (body is a decimal number)
+PUT {{baseUrl}}/api/Portfolio/{{portfolioId}}/stocks/{{stockId}}
+Content-Type: application/json
+
+2.5
+
+### Remove stock from portfolio
+DELETE {{baseUrl}}/api/Portfolio/{{portfolioId}}/stocks/{{stockId}}
+
+###
+### Stocks
+
+### Get all stocks (cached)
+GET {{baseUrl}}/api/Stock
+Accept: application/json
+
+### Update stock price by name (body is a decimal number)
+PUT {{baseUrl}}/api/Stock/name/{{stockName}}/price
+Content-Type: application/json
+Accept: application/json
+
+123.45
+
+###
+### Exchange rate
+
+### Get exchange rate (default USD-TWD)
+GET {{baseUrl}}/api/ExchangeRate/USD-TWD
 Accept: application/json
 
 ###
-### GET request with a header
-GET https://portfolio-manager-hcgdctbybhesctgq.eastus2-01.azurewebsites.net/api/Stock
+### PortfolioDailyValue
+
+### Get history (enum name)
+GET {{baseUrl}}/api/PortfolioDailyValue/{{portfolioId}}/history?range=OneMonth
 Accept: application/json
 
-### GET request with portfolio with name (Azure)
-GET https://portfolio-manager-hcgdctbybhesctgq.eastus2-01.azurewebsites.net/api/Portfolio/user/chihkang
+### Get summary (enum numeric also works: 1/3/6/12)
+GET {{baseUrl}}/api/PortfolioDailyValue/{{portfolioId}}/summary?range=1
 Accept: application/json
-#portfolioid=>67283d5d447a55a757f87db7
 
-### Get PortfolioDailyValue history 
-GET https://portfoliomanager-production.up.railway.app/api/PortfolioDailyValue/67283d5d447a55a757f87db7/history?range=1
-accept: application/json
-###
 
