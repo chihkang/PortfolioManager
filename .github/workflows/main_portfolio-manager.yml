@@ -1,9 +1,8 @@
 name: Build and deploy ASP.Net Core app to Azure Web App - portfolio-manager
 
 on:
-  push:
-    branches:
-      - main
+  # Disabled automatic runs to avoid deployments on every push.
+  # Re-enable by restoring the `push:` trigger.
   workflow_dispatch:
 
 jobs:
@@ -18,7 +17,7 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '9.x'
+          global-json-file: global.json
 
       - name: Build with dotnet
         run: dotnet build --configuration Release
