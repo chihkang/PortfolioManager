@@ -6,7 +6,7 @@ COPY ["PortfolioManager.csproj", "./"]
 RUN dotnet add package Microsoft.Extensions.Diagnostics --version 10.0.0
 RUN dotnet add package Microsoft.Extensions.Diagnostics.Abstractions --version 10.0.0
 
-RUN dotnet restore --no-cache
+RUN dotnet restore
 COPY . .
 
 # 發佈設定：建議用傳統 Publish 模式（移除 PublishSingleFile 與 PublishTrimmed）

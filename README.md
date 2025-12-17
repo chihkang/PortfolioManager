@@ -124,5 +124,3 @@ CI（GitHub Actions）：
 - **啟動就 crash**：多數是 MongoDB 連線字串或 DB 名稱未設定（startup 會驗證連線並建立 index）。
 
 ---
-
-Maintained with GPT-5.2 (Preview).
