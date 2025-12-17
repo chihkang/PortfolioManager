@@ -1,10 +1,10 @@
-FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 WORKDIR /src
 COPY ["PortfolioManager.csproj", "./"]
 
 # 強制安裝特定版本的套件
-RUN dotnet add package Microsoft.Extensions.Diagnostics --version 9.0.0
-RUN dotnet add package Microsoft.Extensions.Diagnostics.Abstractions --version 9.0.0
+RUN dotnet add package Microsoft.Extensions.Diagnostics --version 10.0.0
+RUN dotnet add package Microsoft.Extensions.Diagnostics.Abstractions --version 10.0.0
 
 RUN dotnet restore --no-cache
 COPY . .
@@ -13,10 +13,10 @@ COPY . .
 RUN dotnet publish PortfolioManager.csproj -c Release -o /app/publish \
     /p:DebugType=None \
     /p:DebugSymbols=false \
-    /p:TargetFramework=net9.0 \
+    /p:TargetFramework=net10.0 \
     /p:RuntimeIdentifier=linux-musl-x64
 
-FROM mcr.microsoft.com/dotnet/aspnet:9.0-alpine
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine
 WORKDIR /app
 
 # 安裝 tzdata 套件以支援時區設定，並設定 Asia/Taipei 時區

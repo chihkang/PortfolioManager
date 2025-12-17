@@ -17,7 +17,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
         ForwardedHeaders.XForwardedHost;
 
     // Zeabur's proxy IPs are not known ahead of time.
-    options.KnownNetworks.Clear();
+    options.KnownIPNetworks.Clear();
     options.KnownProxies.Clear();
 });
 
