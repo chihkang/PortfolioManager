@@ -1,6 +1,6 @@
 # PortfolioManager
 
-一個以 ASP.NET Core (.NET 9) + MongoDB 為主的投資組合（Portfolio）後端 API，提供使用者、投資組合、股票資料與每日資產變化查詢，並內建 Quartz 排程作業。
+一個以 ASP.NET Core (.NET 10) + MongoDB 為主的投資組合（Portfolio）後端 API，提供使用者、投資組合、股票資料與每日資產變化查詢，並內建 Quartz 排程作業。
 
 ## Features
 
@@ -12,7 +12,7 @@
 
 ## Requirements
 
-- .NET SDK 9
+- .NET SDK 10（依 `global.json`；可能為 pre-release）
 - MongoDB（Atlas 或自建皆可）
 
 ## Run locally
@@ -92,6 +92,31 @@ docker run --rm \
 - `RecordDailyValueJob`
   - 週一至週五 13:35（Asia/Taipei）
   - 週六 05:35（Asia/Taipei）
+
+## Testing & Coverage
+
+本專案包含測試專案 `PortfolioManager.Tests`，並在 GitHub Actions 內建 coverage workflow。
+
+本機跑測試：
+
+```bash
+dotnet test PortfolioManager.sln
+```
+
+本機產生 coverage（Cobertura）：
+
+```bash
+dotnet test PortfolioManager.sln -c Release --collect:"XPlat Code Coverage" --results-directory ./TestResults
+```
+
+CI（GitHub Actions）：
+
+- Workflow：`.github/workflows/agentic-test-coverage.yml`
+- 在 Pull Request 會自動留言顯示：
+  - HEAD coverage
+  - BASE coverage
+  - 差異 $\Delta$（percentage points）
+- 可透過 workflow 內的 `COVERAGE_MINIMUM`（0~1，小數）設定最低 coverage gate（預設 0 表示不啟用）
 
 ## Troubleshooting
 

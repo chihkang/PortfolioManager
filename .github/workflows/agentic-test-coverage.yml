@@ -1,0 +1,211 @@
+name: Agentic Test Coverage
+
+on:
+  pull_request:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  # Set to a decimal between 0 and 1 (e.g., 0.2 == 20%). Use 0 to disable gating.
+  COVERAGE_MINIMUM: "0"
+
+jobs:
+  test-coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET (global.json)
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore PortfolioManager.sln
+
+      - name: Test (HEAD) with coverage
+        run: |
+          dotnet test PortfolioManager.sln \
+            -c Release \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./TestResults-head \
+            --logger "trx;LogFileName=test-results.trx"
+
+      - name: Test (BASE) with coverage
+        if: ${{ github.event_name == 'pull_request' }}
+        continue-on-error: true
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git checkout "$BASE_SHA"
+          dotnet restore PortfolioManager.sln
+          dotnet test PortfolioManager.sln \
+            -c Release \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./TestResults-base \
+            --logger "trx;LogFileName=test-results.trx"
+
+      - name: Checkout back to HEAD
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: git checkout "$HEAD_SHA"
+
+      - name: Generate coverage report
+        run: |
+          dotnet tool install --global dotnet-reportgenerator-globaltool
+          reportgenerator \
+            -reports:"TestResults-head/**/coverage.cobertura.xml" \
+            -targetdir:"coverage-report" \
+            -reporttypes:"Cobertura;TextSummary;HtmlInline_AzurePipelines"
+
+      - name: Add coverage summary to job
+        shell: bash
+        run: |
+          if [[ -f coverage-report/Summary.txt ]]; then
+            {
+              echo "## Test Coverage"
+              echo
+              echo "\`\`\`"
+              cat coverage-report/Summary.txt
+              echo "\`\`\`"
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Coverage summary not found (coverage-report/Summary.txt)." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Enforce coverage minimum
+        if: ${{ env.COVERAGE_MINIMUM != '0' }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import glob
+          import os
+          import sys
+          import xml.etree.ElementTree as ET
+
+          min_cov = float(os.environ.get('COVERAGE_MINIMUM', '0'))
+          files = glob.glob('TestResults-head/**/coverage.cobertura.xml', recursive=True)
+          if not files:
+              print('No cobertura report found under TestResults-head/**/coverage.cobertura.xml')
+              sys.exit(1)
+
+          # Pick the first report (single test run expected)
+          path = files[0]
+          root = ET.parse(path).getroot()
+          line_rate = float(root.attrib.get('line-rate', '0'))
+
+          print(f'Cobertura: {path}')
+          print(f'Line rate: {line_rate:.4f} (minimum: {min_cov:.4f})')
+
+          if line_rate + 1e-12 < min_cov:
+              print('Coverage below minimum. Failing workflow.')
+              sys.exit(2)
+
+          print('Coverage meets minimum.')
+          PY
+
+      - name: Prepare PR coverage comment
+        if: ${{ github.event_name == 'pull_request' }}
+        id: prcov
+        shell: bash
+        run: |
+          python - <<'PY'
+          import glob
+          import os
+          import sys
+          import xml.etree.ElementTree as ET
+
+          def parse_line_rate(pattern: str):
+              files = glob.glob(pattern, recursive=True)
+              if not files:
+                  return None
+              root = ET.parse(files[0]).getroot()
+              try:
+                  return float(root.attrib.get('line-rate', '0'))
+              except Exception:
+                  return None
+
+          head = parse_line_rate('TestResults-head/**/coverage.cobertura.xml')
+          base = parse_line_rate('TestResults-base/**/coverage.cobertura.xml')
+
+          if head is None:
+              print('::error::No HEAD cobertura report found under TestResults-head/**/coverage.cobertura.xml')
+              sys.exit(1)
+
+          def fmt_pct(x: float) -> str:
+              return f"{x*100:.2f}%"
+
+          def fmt_pp(delta: float) -> str:
+              sign = '+' if delta > 1e-12 else ''
+              return f"{sign}{delta*100:.2f} pp"
+
+          delta = (head - base) if base is not None else None
+
+          summary_path = os.path.join('coverage-report', 'Summary.txt')
+          summary = ''
+          if os.path.isfile(summary_path):
+              with open(summary_path, 'r', encoding='utf-8', errors='replace') as f:
+                  summary = f.read().strip()
+
+          lines = []
+          lines.append('## Test Coverage')
+          lines.append('')
+          lines.append(f"- HEAD: **{fmt_pct(head)}**")
+          if base is None:
+              lines.append('- BASE: _(not available; base test run may have failed or produced no report)_')
+          else:
+              lines.append(f"- BASE: **{fmt_pct(base)}**")
+              lines.append(f"- Δ: **{fmt_pp(delta)}**")
+          if summary:
+              lines.append('')
+              lines.append('<details><summary>ReportGenerator Summary</summary>')
+              lines.append('')
+              lines.append('```')
+              lines.append(summary)
+              lines.append('```')
+              lines.append('</details>')
+          lines.append('')
+          lines.append(f"Run: {os.environ.get('GITHUB_SERVER_URL')}/{os.environ.get('GITHUB_REPOSITORY')}/actions/runs/{os.environ.get('GITHUB_RUN_ID')}")
+          comment = "\n".join(lines)
+
+          out_path = os.environ['GITHUB_OUTPUT']
+          with open(out_path, 'a', encoding='utf-8') as f:
+              f.write('comment<<__COMMENT__\n')
+              f.write(comment)
+              f.write('\n__COMMENT__\n')
+          PY
+
+      - name: Post PR coverage comment
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: test-coverage
+          message: ${{ steps.prcov.outputs.comment }}
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            TestResults-head
+            TestResults-base
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage-report

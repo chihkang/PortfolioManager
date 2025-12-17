@@ -23,4 +23,10 @@
     <Folder Include="Handlers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="PortfolioManager.Tests/**/*.cs" />
+    <EmbeddedResource Remove="PortfolioManager.Tests/**/*.cs" />
+    <None Remove="PortfolioManager.Tests/**/*.cs" />
+  </ItemGroup>
+
 </Project>
