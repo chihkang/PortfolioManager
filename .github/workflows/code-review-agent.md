@@ -11,8 +11,7 @@ permissions:
 
 tools:
   bash:
-    - "gh pr view ${{ github.event.pull_request.number }} --json files --jq '.files.[].path'"
-    - "cat *"
+    - "gh pr diff ${{ github.event.pull_request.number }}"
 
 safe-outputs:
   create-issue:
@@ -32,10 +31,12 @@ Your goal is to review the code changes in this Pull Request against specific ar
 4. **Direct Collection Access**: Use `Lazy<IMongoCollection<T>>` patterns.
 
 # Instructions
-1. Get the list of changed files in this PR using the `gh` command.
-2. For each changed `.cs` file (excluding `bin/`, `obj/`, and tests), read the **ENTIRE** file content.
-3. Analyze the code for violations of the guidelines above.
-4. Prepare a detailed report.
+1. Get the diff of the Pull Request using the `gh` command.
+2. Analyze the **diff output** for violations of the guidelines above.
+   - Focus ONLY on the added/modified lines (lines starting with `+`).
+   - Ignore removed lines (lines starting with `-`).
+   - Context lines (starting with space) help you understand where the change is, but don't review them for errors unless they are directly related to the change.
+3. Prepare a detailed report.
    - If violations are found, list the file, the violation, and a code example of how to fix it.
    - If the code follows the guidelines, mention that it looks good.
    - Group findings by file.
