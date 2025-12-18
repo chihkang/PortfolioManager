@@ -2,6 +2,10 @@
 
 一個以 ASP.NET Core (.NET 10) + MongoDB 為主的投資組合（Portfolio）後端 API，提供使用者、投資組合、股票資料與每日資產變化查詢，並內建 Quartz 排程作業。
 
+> 📖 **English Documentation**: See [docs/](./docs/) for comprehensive English guides, tutorials, and API reference.
+> 
+> 🌐 **Traditional Chinese**: This README (本文件為繁體中文版本)
+
 ## Features
 
 - REST API（Controllers）
@@ -122,5 +126,21 @@ CI（GitHub Actions）：
 
 - **502 / 連不上服務**：通常是容器監聽的 port 跟平台對外轉發 port 不一致。請確認平台設定 `ASPNETCORE_URLS`，並避免在程式內硬綁 port。
 - **啟動就 crash**：多數是 MongoDB 連線字串或 DB 名稱未設定（startup 會驗證連線並建立 index）。
+
+## Documentation
+
+### 📚 Comprehensive Documentation (English)
+
+- **[Getting Started Guide](./docs/guides/getting-started.md)** - Setup and local development
+- **[Architecture Overview](./docs/guides/architecture.md)** - System design and patterns
+- **[Deployment Guide](./docs/guides/deployment.md)** - Docker, Zeabur, Kubernetes
+- **[API Reference](./docs/api/README.md)** - Complete API documentation
+- **[Tutorial: Creating Your First User](./docs/tutorials/creating-user.md)** - Step-by-step guide
+- **[Contributing Guidelines](./CONTRIBUTING.md)** - How to contribute
+
+### 🤖 For AI Agents & Developers
+
+- **[AGENT.md](./AGENT.md)** - Domain context for AI agents
+- **[.github/copilot-instructions.md](./.github/copilot-instructions.md)** - Technical coding guidelines
 
 ---
