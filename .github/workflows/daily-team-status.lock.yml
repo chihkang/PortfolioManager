@@ -144,6 +144,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      discussions: write
       issues: read
       pull-requests: read
     concurrency:
@@ -258,8 +259,8 @@ jobs:
           copilot --version
       - name: Install awf binary
         run: |
-          echo "Installing awf from release: v0.6.0"
-          curl -L https://github.com/githubnext/gh-aw-firewall/releases/download/v0.6.0/awf-linux-x64 -o awf
+          echo "Installing awf from release: v0.7.0"
+          curl -L https://github.com/githubnext/gh-aw-firewall/releases/download/v0.7.0/awf-linux-x64 -o awf
           chmod +x awf
           sudo mv awf /usr/local/bin/
           which awf
