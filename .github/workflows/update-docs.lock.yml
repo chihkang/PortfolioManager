@@ -44,6 +44,8 @@ concurrency:
 run-name: "Update Docs"
 
 env:
+  GH_AW_BASE_BRANCH: ${{ github.event.repository.default_branch || 'main' }}
+  GH_AW_WORKFLOW_ID: ${{ github.workflow_ref || github.workflow }}
   GH_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
 
