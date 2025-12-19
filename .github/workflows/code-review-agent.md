@@ -11,7 +11,6 @@ permissions:
 
 engine: 
   id: copilot
-  model: gpt-4o
 
 tools:
   bash:
