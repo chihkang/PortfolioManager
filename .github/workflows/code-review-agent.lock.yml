@@ -1978,20 +1978,15 @@ jobs:
           4. **Direct Collection Access**: Use `Lazy<IMongoCollection<T>>` patterns. 
           
           # Instructions
-          1. Get the diff of the Pull Request using the `gh pr diff` bash tool. 
+          1. Get the diff of the Pull Request using the `gh` command.
           2. Analyze the **diff output** for violations of the guidelines above.
              - Focus ONLY on the added/modified lines (lines starting with `+`).
              - Ignore removed lines (lines starting with `-`).
-             - Context lines (starting with space) help you understand where the change is, but don't review them for errors unless they are directly related to the change. 
-          3. If violations are found: 
-             - Create an issue with detailed findings listing the file, the violation, and a code example of how to fix it.
-             - Group findings by file. 
-             - Use the `create_issue` tool with this format:
-               - **title**: "Code Review:  PR #__GH_AW_GITHUB_EVENT_PULL_REQUEST_NUMBER__ - __GH_AW_GITHUB_EVENT_PULL_REQUEST_TITLE__"
-               - **body**: A detailed markdown report with your findings
-               - **labels**: Will be automatically added as configured
-          4. If the code follows all guidelines: 
-             - Use the `noop` tool to log:  "Code review complete - no architectural guideline violations found"
+             - Context lines (starting with space) help you understand where the change is, but don't review them for errors unless they are directly related to the change.
+          3. Prepare a detailed report.
+             - If violations are found, list the file, the violation, and a code example of how to fix it.
+             - If the code follows the guidelines, mention that it looks good.
+             - Group findings by file.
           
           # Important
           - You MUST use the bash tool to get the PR diff first
@@ -2450,7 +2445,7 @@ jobs:
         run: |
           set -o pipefail
           sudo -E awf --env-all --container-workdir "${GITHUB_WORKSPACE}" --mount /tmp:/tmp:rw --mount "${GITHUB_WORKSPACE}:${GITHUB_WORKSPACE}:rw" --mount /usr/bin/date:/usr/bin/date:ro --mount /usr/bin/gh:/usr/bin/gh:ro --mount /usr/bin/yq:/usr/bin/yq:ro --mount /usr/local/bin/copilot:/usr/local/bin/copilot:ro --allow-domains api.business.githubcopilot.com,api.enterprise.githubcopilot.com,api.github.com,api.individual.githubcopilot.com,github.com,host.docker.internal,raw.githubusercontent.com,registry.npmjs.org --log-level info --proxy-logs-dir /tmp/gh-aw/sandbox/firewall/logs \
-            -- /usr/local/bin/copilot --add-dir /tmp/gh-aw/ --log-level all --log-dir /tmp/gh-aw/sandbox/agent/logs/ --add-dir "${GITHUB_WORKSPACE}" --disable-builtin-mcps --model gpt-4o --allow-tool github --allow-tool safeoutputs --allow-tool 'shell(cat)' --allow-tool 'shell(date)' --allow-tool 'shell(echo)' --allow-tool 'shell(gh pr diff ${{ github.event.pull_request.number }})' --allow-tool 'shell(grep)' --allow-tool 'shell(head)' --allow-tool 'shell(ls)' --allow-tool 'shell(pwd)' --allow-tool 'shell(sort)' --allow-tool 'shell(tail)' --allow-tool 'shell(uniq)' --allow-tool 'shell(wc)' --allow-tool 'shell(yq)' --prompt "$(cat /tmp/gh-aw/aw-prompts/prompt.txt)" \
+            -- /usr/local/bin/copilot --add-dir /tmp/gh-aw/ --log-level all --log-dir /tmp/gh-aw/sandbox/agent/logs/ --add-dir "${GITHUB_WORKSPACE}" --disable-builtin-mcps --allow-tool github --allow-tool safeoutputs --allow-tool 'shell(cat)' --allow-tool 'shell(date)' --allow-tool 'shell(echo)' --allow-tool 'shell(gh pr diff ${{ github.event.pull_request.number }})' --allow-tool 'shell(grep)' --allow-tool 'shell(head)' --allow-tool 'shell(ls)' --allow-tool 'shell(pwd)' --allow-tool 'shell(sort)' --allow-tool 'shell(tail)' --allow-tool 'shell(uniq)' --allow-tool 'shell(wc)' --allow-tool 'shell(yq)' --prompt "$(cat /tmp/gh-aw/aw-prompts/prompt.txt)"${GH_AW_MODEL_AGENT_COPILOT:+ --model "$GH_AW_MODEL_AGENT_COPILOT"} \
             2>&1 | tee /tmp/gh-aw/agent-stdio.log
         env:
           COPILOT_AGENT_RUNNER_TYPE: STANDALONE
