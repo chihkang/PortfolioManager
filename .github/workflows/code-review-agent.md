@@ -9,26 +9,37 @@ permissions:
   issues: read
   pull-requests: read
 
+network:
+  allowed: [defaults, github]
+
+engine: 
+  id: copilot
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 tools:
   bash:
     - "gh pr diff ${{ github.event.pull_request.number }}"
 
 safe-outputs:
-  create-issue:
+  create-issue: 
+    max:  1
     labels: ["code-review", "automated"]
+  noop:
+    max: 1
 
 ---
 
-You are an expert .NET 10 and C# 12 Architect.
+You are an expert . NET 10 and C# 12 Architect. 
 Your goal is to review the code changes in this Pull Request against specific architectural guidelines.
 
 # Project Guidelines
-1. **Primary Constructors**: ALWAYS use C# 12+ primary constructors for dependency injection.
+1. **Primary Constructors**:  ALWAYS use C# 12+ primary constructors for dependency injection. 
    - *Bad*: `public class MyController : ControllerBase { public MyController(IService s) { ... } }`
    - *Good*: `public class MyController(IService s) : ControllerBase`
 2. **Structured Logging**: Use `ILogger` with structured logging and raw string literals.
-3. **No Repository Pattern**: Inject `MongoDbService` directly; do not use repository abstractions.
-4. **Direct Collection Access**: Use `Lazy<IMongoCollection<T>>` patterns.
+3. **No Repository Pattern**:  Inject `MongoDbService` directly; do not use repository abstractions.
+4. **Direct Collection Access**: Use `Lazy<IMongoCollection<T>>` patterns. 
 
 # Instructions
 1. Get the diff of the Pull Request using the `gh` command.
