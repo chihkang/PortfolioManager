@@ -14,7 +14,25 @@ on:
 
 permissions: read-all
 
+env:
+  GH_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+  GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+
 network: defaults
+
+# NOTE: The AWF sandbox can prevent Copilot CLI from seeing auth env vars.
+# Disable sandbox to allow Copilot CLI to authenticate via GH_TOKEN/GITHUB_TOKEN.
+sandbox:
+  agent: false
+
+# Copilot CLI sometimes fails to detect COPILOT_GITHUB_TOKEN inside the sandbox.
+# Provide the same token via GH_TOKEN/GITHUB_TOKEN as well.
+engine:
+  id: copilot
+  env:
+    GH_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+    GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+    COPILOT_GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
 
 safe-outputs:
   create-pull-request:
