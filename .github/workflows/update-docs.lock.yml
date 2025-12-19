@@ -34,12 +34,22 @@ name: "Update Docs"
   push:
     branches:
     - main
+    paths-ignore:
+    - .github/**
+    - "**/bin/**"
+    - "**/obj/**"
+    - "**/*.sln.DotSettings"
+    - "**/*.sln.DotSettings.user"
+    - "**/*.user"
+    - .vscode/**
+    - .idea/**
   workflow_dispatch: null
 
 permissions: {}
 
 concurrency:
-  group: "gh-aw-${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
 
 run-name: "Update Docs"
 
