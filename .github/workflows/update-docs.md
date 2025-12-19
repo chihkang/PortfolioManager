@@ -17,6 +17,9 @@ permissions: read-all
 env:
   GH_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
   GITHUB_TOKEN: ${{ secrets.COPILOT_GITHUB_TOKEN }}
+  # Required by gh-aw "Create Pull Request" step (actions/github-script)
+  GH_AW_WORKFLOW_ID: ${{ github.workflow_ref || github.workflow }}
+  GH_AW_BASE_BRANCH: ${{ github.event.repository.default_branch || 'main' }}
 
 network: defaults
 
