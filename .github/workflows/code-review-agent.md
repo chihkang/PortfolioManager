@@ -9,8 +9,13 @@ permissions:
   issues: read
   pull-requests: read
 
+network:
+  allowed: [defaults, github]
+
 engine: 
   id: copilot
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 tools:
   bash:
