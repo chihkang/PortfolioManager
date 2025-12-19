@@ -9,8 +9,21 @@ description: |
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - ".github/**"
+      - "**/bin/**"
+      - "**/obj/**"
+      - "**/*.sln.DotSettings"
+      - "**/*.sln.DotSettings.user"
+      - "**/*.user"
+      - ".vscode/**"
+      - ".idea/**"
   workflow_dispatch:
   stop-after: +1mo # workflow will no longer trigger after 1 month. Remove this and recompile to run indefinitely
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions: read-all
 
