@@ -68,6 +68,54 @@ builder.Services.AddQuartz(q =>
         .WithCronSchedule("0 35 5 ? * SAT", x => x
             .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Asia/Taipei")))
     );
+
+    // Stock Updater Job
+    var stockUpdaterJobKey = new JobKey("StockUpdaterJob");
+    q.AddJob<StockUpdaterJob>(opts => opts.WithIdentity(stockUpdaterJobKey).StoreDurably());
+
+    // TW Market Triggers (Asia/Taipei)
+    // 09:00 - 12:55
+    q.AddTrigger(opts => opts
+        .ForJob(stockUpdaterJobKey)
+        .WithIdentity("TwStockMorningTrigger")
+        .UsingJobData("stockType", "TW")
+        .WithCronSchedule("0 0/5 9-12 ? * MON-FRI", x => x
+            .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Asia/Taipei")))
+    );
+    // 13:00 - 13:30
+    q.AddTrigger(opts => opts
+        .ForJob(stockUpdaterJobKey)
+        .WithIdentity("TwStockAfternoonTrigger")
+        .UsingJobData("stockType", "TW")
+        .WithCronSchedule("0 0-30/5 13 ? * MON-FRI", x => x
+            .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("Asia/Taipei")))
+    );
+
+    // US Market Triggers (America/New_York) - Handles DST automatically
+    // 09:30 - 09:55
+    q.AddTrigger(opts => opts
+        .ForJob(stockUpdaterJobKey)
+        .WithIdentity("UsStockMorningTrigger")
+        .UsingJobData("stockType", "US")
+        .WithCronSchedule("0 30/5 9 ? * MON-FRI", x => x
+            .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("America/New_York")))
+    );
+    // 10:00 - 15:55
+    q.AddTrigger(opts => opts
+        .ForJob(stockUpdaterJobKey)
+        .WithIdentity("UsStockDayTrigger")
+        .UsingJobData("stockType", "US")
+        .WithCronSchedule("0 0/5 10-15 ? * MON-FRI", x => x
+            .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("America/New_York")))
+    );
+    // 16:00
+    q.AddTrigger(opts => opts
+        .ForJob(stockUpdaterJobKey)
+        .WithIdentity("UsStockCloseTrigger")
+        .UsingJobData("stockType", "US")
+        .WithCronSchedule("0 0 16 ? * MON-FRI", x => x
+            .InTimeZone(TimeZoneInfo.FindSystemTimeZoneById("America/New_York")))
+    );
 });
 
 // 添加 Quartz 托管服務
