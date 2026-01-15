@@ -2,6 +2,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace PortfolioManager.Models.Entities;
 
+[BsonIgnoreExtraElements]
 public class Portfolio
 {
     [BsonId]

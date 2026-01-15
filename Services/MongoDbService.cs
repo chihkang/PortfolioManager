@@ -17,15 +17,18 @@ public class MongoDbService
     private readonly ILogger<MongoDbService> _logger;
     private readonly Lazy<IMongoCollection<PortfolioDailyValue>> _portfolioDailyValues;
     private readonly Lazy<IMongoCollection<Portfolio>> _portfolios;
+    private readonly Lazy<IMongoCollection<PositionEvent>> _positionEvents;
     private readonly Lazy<IMongoCollection<Stock>> _stocks;
     private readonly Lazy<IMongoCollection<User>> _users;
+    private readonly IHostEnvironment? _environment;
 
-    public MongoDbService(IOptions<MongoDbSettings> settings, ILogger<MongoDbService> logger)
+    public MongoDbService(IOptions<MongoDbSettings> settings, ILogger<MongoDbService> logger, IHostEnvironment? environment = null)
     {
         ArgumentNullException.ThrowIfNull(settings.Value.ConnectionString);
         ArgumentNullException.ThrowIfNull(settings.Value.DatabaseName);
 
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _environment = environment;
 
         try
         {
@@ -40,16 +43,29 @@ public class MongoDbService
             _users = new Lazy<IMongoCollection<User>>(() => _database.GetCollection<User>("users"));
             _portfolios = new Lazy<IMongoCollection<Portfolio>>(() =>
             {
-                var collection = _database.GetCollection<Portfolio>("portfolio"); // 這裡改為 portfolio
-                _logger.LogInformation("Initialized Portfolio collection");
+                var collection = _database.GetCollection<Portfolio>("portfolio");
+                _logger.LogDebug("Initialized Portfolio collection");
                 return collection;
             });
             _portfolioDailyValues = new Lazy<IMongoCollection<PortfolioDailyValue>>(() =>
                 _database.GetCollection<PortfolioDailyValue>("portfolio_daily_values"));
+            _positionEvents = new Lazy<IMongoCollection<PositionEvent>>(() =>
+                _database.GetCollection<PositionEvent>("positionEvents"));
             _stocks = new Lazy<IMongoCollection<Stock>>(() => _database.GetCollection<Stock>("stocks"));
 
             TestConnection();
-            CreateIndexesAsync().GetAwaiter().GetResult();
+            // 非同步建立索引，避免阻塞啟動
+            _ = Task.Run(async () =>
+            {
+                try
+                {
+                    await CreateIndexesAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Background index creation failed");
+                }
+            });
         }
         catch (Exception ex)
         {
@@ -62,6 +78,7 @@ public class MongoDbService
     public IMongoCollection<User> Users => _users.Value;
     public IMongoCollection<Portfolio> Portfolios => _portfolios.Value;
     public IMongoCollection<PortfolioDailyValue> PortfolioDailyValues => _portfolioDailyValues.Value;
+    public IMongoCollection<PositionEvent> PositionEvents => _positionEvents.Value;
     public IMongoCollection<Stock> Stocks => _stocks.Value;
     public IMongoClient Client => _client;
 
@@ -75,7 +92,8 @@ public class MongoDbService
                 CreateStockIndexes(),
                 CreatePortfolioIndexes(),
                 CreateUserIndexes(),
-                CreatePortfolioDailyValueIndexes()
+                CreatePortfolioDailyValueIndexes(),
+                CreatePositionEventIndexes()
             );
 
             _logger.LogInformation("Successfully created all indexes");
@@ -179,6 +197,47 @@ public class MongoDbService
         await CreateIndexesWithRetry(PortfolioDailyValues, indexes, nameof(PortfolioDailyValues));
     }
 
+    private async Task CreatePositionEventIndexes()
+    {
+        var indexes = new[]
+        {
+            // 用於查詢特定使用者的交易紀錄（按時間排序）
+            new CreateIndexModel<PositionEvent>(
+                Builders<PositionEvent>.IndexKeys
+                    .Ascending(p => p.UserId)
+                    .Descending(p => p.TradeAt),
+                new CreateIndexOptions { Name = "idx_position_event_user_trade_at" }
+            ),
+            // 用於查詢特定股票的交易紀錄
+            new CreateIndexModel<PositionEvent>(
+                Builders<PositionEvent>.IndexKeys
+                    .Ascending(p => p.StockId)
+                    .Descending(p => p.TradeAt),
+                new CreateIndexOptions { Name = "idx_position_event_stock_trade_at" }
+            ),
+            // 用於防止重複操作（idempotency）
+            new CreateIndexModel<PositionEvent>(
+                Builders<PositionEvent>.IndexKeys.Ascending(p => p.OperationId),
+                new CreateIndexOptions { Unique = true, Name = "idx_position_event_operation_id" }
+            ),
+            // 用於按建立時間查詢/清理
+            new CreateIndexModel<PositionEvent>(
+                Builders<PositionEvent>.IndexKeys.Descending(p => p.CreatedAt),
+                new CreateIndexOptions { Name = "idx_position_event_created_at" }
+            ),
+            // 用於查詢特定使用者特定股票的交易紀錄
+            new CreateIndexModel<PositionEvent>(
+                Builders<PositionEvent>.IndexKeys
+                    .Ascending(p => p.UserId)
+                    .Ascending(p => p.StockId)
+                    .Descending(p => p.TradeAt),
+                new CreateIndexOptions { Name = "idx_position_event_user_stock_trade_at" }
+            )
+        };
+
+        await CreateIndexesWithRetry(PositionEvents, indexes, nameof(PositionEvents));
+    }
+
     private async Task CreateIndexesWithRetry<T>(
         IMongoCollection<T> collection,
         CreateIndexModel<T>[] indexes,
@@ -228,23 +287,27 @@ public class MongoDbService
             _database.RunCommand<BsonDocument>(new BsonDocument("ping", 1));
             _logger.LogInformation("Successfully connected to MongoDB");
 
-            // 獲取數據庫信息
-            var databaseStats = _database.RunCommand<BsonDocument>(new BsonDocument("dbStats", 1));
-            _logger.LogInformation("Database stats: {@DatabaseStats}", databaseStats);
-
-            // 列出並測試所有集合
-            var collections = _database.ListCollections().ToList();
-            _logger.LogInformation("Found {CollectionCount} collections", collections.Count);
-
-            foreach (var collection in collections)
+            // 在 Development 環境才顯示詳細統計
+            if (_environment?.IsDevelopment() == true)
             {
-                var collectionName = collection["name"].AsString;
-                var collectionStats = _database.RunCommand<BsonDocument>(
-                    new BsonDocument("collStats", collectionName));
-                _logger.LogInformation(
-                    "Collection {CollectionName} stats: {@CollectionStats}",
-                    collectionName,
-                    collectionStats);
+                // 獲取數據庫信息
+                var databaseStats = _database.RunCommand<BsonDocument>(new BsonDocument("dbStats", 1));
+                _logger.LogDebug("Database stats: {@DatabaseStats}", databaseStats);
+
+                // 列出並測試所有集合
+                var collections = _database.ListCollections().ToList();
+                _logger.LogDebug("Found {CollectionCount} collections", collections.Count);
+
+                foreach (var collection in collections)
+                {
+                    var collectionName = collection["name"].AsString;
+                    var collectionStats = _database.RunCommand<BsonDocument>(
+                        new BsonDocument("collStats", collectionName));
+                    _logger.LogDebug(
+                        "Collection {CollectionName} stats: {@CollectionStats}",
+                        collectionName,
+                        collectionStats);
+                }
             }
         }
         catch (Exception ex)
