@@ -93,7 +93,8 @@ public class StockController(
                     {
                         Id = s.Id,
                         Price = s.Price,
-                        Currency = s.Currency
+                        Currency = s.Currency,
+                        LastUpdated = s.LastUpdated
                     }))
                 .FirstOrDefaultAsync();
 
@@ -137,7 +138,8 @@ public class StockController(
                     {
                         Id = s.Id,
                         Price = s.Price,
-                        Currency = s.Currency
+                        Currency = s.Currency,
+                        LastUpdated = s.LastUpdated
                     }))
                 .FirstOrDefaultAsync();
 
